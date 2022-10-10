@@ -1,0 +1,159 @@
+openapi: 3.0.1
+info:
+  title: Swagger JCalendar API
+  description: JCalendar API
+  contact: { }
+  version: "1.0"
+servers:
+  - url: /api
+paths:
+  /users/{id}:
+    get:
+      summary: User information
+      description: Returns user information
+      tags:
+        - user
+      parameters:
+        - name: id
+          in: path
+          description: user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserReponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/{email}:
+    get:
+      summary: User information
+      description: Returns user information
+      tags:
+        - user
+      parameters:
+        - name: email
+          in: path
+          description: user email
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserReponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users:
+    post:
+      summary: User information
+      description: Returns user information
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputUser'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        "422":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    UserReponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OutputUser'
+    OutputUser:
+      type: object
+      properties:
+        ID:
+          type: integer
+        CreateAt:
+          type: string
+        UpdateAt:
+          type: string
+        FirstName:
+          type: string
+        LastName:
+          type: string
+        Email:
+          type: string
+        TimeZoneOffset:
+          type: integer
+    InputUser:
+      type: object
+      properties:
+        FirstName:
+          type: string
+        LastName:
+          type: string
+        Email:
+          type: string
+        TimeZoneOffset:
+          type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        Title:
+          type: string
+        Status:
+          type: integer
+    OkResponse:
+      type: object
