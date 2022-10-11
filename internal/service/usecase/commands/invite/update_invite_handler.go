@@ -12,7 +12,7 @@ type UpdateInviteCommandHandler struct {
 	updater Updater
 }
 
-func NewUpdateCommandHandler(updater Updater) UpdateInviteCommandHandler {
+func NewUpdateInviteCommandHandler(updater Updater) UpdateInviteCommandHandler {
 	return UpdateInviteCommandHandler{updater: updater}
 }
 

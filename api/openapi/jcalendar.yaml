@@ -9,8 +9,8 @@ servers:
 paths:
   /users/{id}:
     get:
-      summary: User information
-      description: Returns user information
+      summary: Returns user information
+      description: Return information about user by ID
       tags:
         - user
       parameters:
@@ -47,7 +47,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /users/{email}:
     get:
-      summary: User information
+      summary: Returns user information
       description: Returns user information
       tags:
         - user
@@ -85,24 +85,24 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /users:
     post:
-      summary: User information
-      description: Returns user information
+      summary: Adds user information
+      description: Adds information about user
       tags:
         - user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InputUser'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponse'
+                $ref: '#/components/schemas/CreatedUser'
         "422":
-          description: Not Found
+          description: Unprocessable Entity
           content:
             application/json:
               schema:
@@ -151,25 +151,152 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /events:
-    post:
-      summary: Events information
-      description: Returns events information
+  /events/{user_id}:
+    get:
+      summary: Returns events information for user with user_id
+      description: Returns information about enets for specific user
       tags:
         - events
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventResponse'
+      parameters:
+        - name: user_id
+          in: path
+          description: user identificator
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: begin of interval
+          required: true
+          schema:
+            type: string
+        - name: till
+          in: query
+          description: end of interval
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OkResponse'
+                $ref: '#/components/schemas/EventsResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /events:
+    post:
+      summary: Events information
+      description: Adds events information
+      tags:
+        - events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedEvent'
         "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /invites/{id}:
+    put:
+      summary: Updating status of invite
+      description: Updates invite status
+      tags:
+        - invite
+      parameters:
+        - name: id
+          in: path
+          description: invite identificator
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteUpdateRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedEvent'
+        "422":
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /windows:
+    get:
+      summary: Returns closets free window for meeting
+      description: Returns information about free window for meeting
+      tags:
+        - windows
+      parameters:
+        - name: user_ids[]
+          in: query
+          description: users identificators
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeWindowResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
           description: Not Found
           content:
             application/json:
@@ -188,6 +315,11 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/OutputUser'
+    UserRequest:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/InputUser'
     OutputUser:
       type: object
       properties:
@@ -216,11 +348,21 @@ components:
           type: string
         TimeZoneOffset:
           type: integer
+    EventRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputEvent'
     EventResponse:
       properties:
         data:
-          $ref: '#/components/schemas/OutputEvents'
-    InputEvents:
+          $ref: '#/components/schemas/OutputEvent'
+    EventsResponse:
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutputEvent'
+    InputEvent:
       type: object
       properties:
         From:
@@ -228,12 +370,18 @@ components:
         Till:
           type: string
         CreatorID:
-          type: string
+          type: integer
+        Participants:
+          type: array
+          items:
+            type: integer
         Details:
           type: string
         IsPrivate:
           type: boolean
-    OutputEvents:
+        IsRepeat:
+          type: boolean
+    OutputEvent:
       type: object
       properties:
         ID:
@@ -252,6 +400,11 @@ components:
           type: string
         IsPrivate:
           type: boolean
+    InviteUpdateRequest:
+      type: object
+      properties:
+        IsAccepted:
+          type: boolean
     ErrorResponse:
       type: object
       properties:
@@ -259,5 +412,24 @@ components:
           type: string
         Status:
           type: integer
-    OkResponse:
+    FreeWindowResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/FreeWindow'
+    FreeWindow:
       type: object
+      properties:
+        From:
+          type: string
+        Till:
+          type: string
+    CreatedUser:
+      type: object
+      properties:
+        ID:
+          type: integer
+    CreatedEvent:
+      type: object
+      properties:
+        ID:
+          type: integer

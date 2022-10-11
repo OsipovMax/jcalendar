@@ -14,11 +14,11 @@ type GetInviteQueryHandler struct {
 	getter Getter
 }
 
-func NewQueryHandler(getter Getter) GetInviteQueryHandler {
+func NewGetInviteQueryHandler(getter Getter) GetInviteQueryHandler {
 	return GetInviteQueryHandler{getter: getter}
 }
 
-func (ch *GetInviteQueryHandler) Handle(ctx context.Context, query *Query) (*einvite.Invite, error) {
+func (ch *GetInviteQueryHandler) Handle(ctx context.Context, query *GetInviteQuery) (*einvite.Invite, error) {
 	e, err := ch.getter.GetInviteByID(ctx, query.InviteID)
 	if err != nil {
 		return nil, err

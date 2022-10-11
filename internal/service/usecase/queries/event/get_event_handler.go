@@ -14,11 +14,11 @@ type GetEventQueryHandler struct {
 	getter Getter
 }
 
-func NewQueryHandler(getter Getter) GetEventQueryHandler {
+func NewGetEventQueryHandler(getter Getter) GetEventQueryHandler {
 	return GetEventQueryHandler{getter: getter}
 }
 
-func (ch *GetEventQueryHandler) Handle(ctx context.Context, query *Query) (*eevent.Event, error) {
+func (ch *GetEventQueryHandler) Handle(ctx context.Context, query *GetEventQuery) (*eevent.Event, error) {
 	e, err := ch.getter.GetEventByID(ctx, query.EventID)
 	if err != nil {
 		return nil, err

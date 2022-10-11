@@ -1,19 +1,20 @@
 package event
 
 import (
+	"context"
 	"errors"
 )
 
-type Query struct {
+type GetEventQuery struct {
 	EventID uint
 }
 
-func NewQuery(id uint) (*Query, error) {
+func NewQuery(_ context.Context, id uint) (*GetEventQuery, error) {
 	if id <= 0 {
 		return nil, errors.New("non-positive id value")
 	}
 
-	return &Query{
+	return &GetEventQuery{
 		EventID: id,
 	}, nil
 }

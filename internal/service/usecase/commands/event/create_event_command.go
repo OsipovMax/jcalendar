@@ -22,7 +22,7 @@ func NewCreateEventCommand(
 	_ context.Context,
 	from, till string,
 	creatorID uint,
-	participantsIDs []uint,
+	participantsIDs []int,
 	details string,
 	isPrivate, isRepeat bool,
 ) (*CreateEventCommand, error) {
@@ -38,11 +38,16 @@ func NewCreateEventCommand(
 		return nil, errors.New("non-positive creatorID value")
 	}
 
+	tmp := make([]uint, len(participantsIDs), len(participantsIDs))
+	for idx := range participantsIDs {
+		tmp[idx] = uint(participantsIDs[idx])
+	}
+
 	return &CreateEventCommand{
 		From:            from,
 		Till:            till,
 		CreatorID:       creatorID,
-		ParticipantsIDs: participantsIDs,
+		ParticipantsIDs: tmp,
 		Details:         details,
 		IsRepeat:        isRepeat,
 		IsPrivate:       isPrivate,
