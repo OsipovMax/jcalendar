@@ -22,7 +22,7 @@ func NewRepository(db *gorm.DB) *Repository {
 func (r *Repository) CreateUser(ctx context.Context, u *euser.User) error {
 	err := r.db.WithContext(ctx).Create(u).Error
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid creating user: %w", err)
 	}
 
 	return nil

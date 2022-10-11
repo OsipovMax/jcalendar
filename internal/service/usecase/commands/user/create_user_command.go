@@ -12,7 +12,7 @@ type CreateUserCommand struct {
 	TimeZoneOffset int
 }
 
-func NewCommand(_ context.Context, firstName, lastName, email string, timeZoneOffset int) (*CreateUserCommand, error) {
+func NewCreateUserCommand(_ context.Context, firstName, lastName, email string, timeZoneOffset int) (*CreateUserCommand, error) {
 	if firstName == "" {
 		return nil, errors.New("missing firstName value")
 	}

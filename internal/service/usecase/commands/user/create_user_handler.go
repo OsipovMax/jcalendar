@@ -14,7 +14,7 @@ type CreateUserCommandHandler struct {
 	creator Creator
 }
 
-func NewCommandHandler(creator Creator) CreateUserCommandHandler {
+func NewCreateUserCommandHandler(creator Creator) CreateUserCommandHandler {
 	return CreateUserCommandHandler{creator: creator}
 }
 
