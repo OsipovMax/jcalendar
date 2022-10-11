@@ -8,7 +8,7 @@ type GetInviteQuery struct {
 	InviteID uint
 }
 
-func NewQuery(id uint) (*GetInviteQuery, error) {
+func NewInviteQuery(id uint) (*GetInviteQuery, error) {
 	if id <= 0 {
 		return nil, errors.New("non-positive id value")
 	}

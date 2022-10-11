@@ -13,6 +13,7 @@ type User struct {
 	LastName       string    `json:"last_name"`
 	Email          string    `json:"email"`
 	TimeZoneOffset int       `json:"time_zone_offset"`
+	HashedPassword string    `json:"-"`
 }
 
 func NewUser(

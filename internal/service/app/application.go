@@ -9,6 +9,7 @@ import (
 	cmduser "jcalendar/internal/service/usecase/commands/user"
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 	qrinvite "jcalendar/internal/service/usecase/queries/invite"
+	qruser "jcalendar/internal/service/usecase/queries/user"
 
 	"gorm.io/gorm"
 )
@@ -35,6 +36,8 @@ func NewApplication(db *gorm.DB) *Application {
 		},
 
 		Queries: Queries{
+			GetUserByEmail: qruser.NewGetUserByEmailQueryHandler(urepo),
+
 			GetEvent: qrevent.NewGetEventQueryHandler(erepo),
 
 			GetInvite: qrinvite.NewGetInviteQueryHandler(irepo),

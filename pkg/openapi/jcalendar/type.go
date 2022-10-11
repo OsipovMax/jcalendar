@@ -72,13 +72,23 @@ type InviteUpdateRequest struct {
 // OutputEvent defines model for OutputEvent.
 type OutputEvent struct {
 	CreateAt  *string `json:"CreateAt,omitempty"`
-	CreatorID *string `json:"CreatorID,omitempty"`
+	CreatorID *int    `json:"CreatorID,omitempty"`
 	Details   *string `json:"Details,omitempty"`
 	From      *string `json:"From,omitempty"`
 	ID        *int    `json:"ID,omitempty"`
 	IsPrivate *bool   `json:"IsPrivate,omitempty"`
 	Till      *string `json:"Till,omitempty"`
 	UpdateAt  *string `json:"UpdateAt,omitempty"`
+}
+
+// TokenPayload defines model for TokenPayload.
+type TokenPayload struct {
+	Token *string `json:"Token,omitempty"`
+}
+
+// TokenResponse defines model for TokenResponse.
+type TokenResponse struct {
+	Data *TokenPayload `json:"data,omitempty"`
 }
 
 // UserRequest defines model for UserRequest.

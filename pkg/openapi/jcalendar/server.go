@@ -25,6 +25,9 @@ type ServerInterface interface {
 	// Updating status of invite
 	// (PUT /invites/{id})
 	PutInvitesId(ctx echo.Context, id string) error
+	// Events information
+	// (POST /login)
+	PostLogin(ctx echo.Context) error
 	// Adds user information
 	// (POST /users)
 	PostUsers(ctx echo.Context) error
@@ -111,6 +114,15 @@ func (w *ServerInterfaceWrapper) PutInvitesId(ctx echo.Context) error {
 	return err
 }
 
+// PostLogin converts echo context to params.
+func (w *ServerInterfaceWrapper) PostLogin(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostLogin(ctx)
+	return err
+}
+
 // PostUsers converts echo context to params.
 func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 	var err error
@@ -170,6 +182,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/events/:id", wrapper.GetEventsId)
 	router.GET(baseURL+"/events/:user_id", wrapper.GetEventsUserId)
 	router.PUT(baseURL+"/invites/:id", wrapper.PutInvitesId)
+	router.POST(baseURL+"/login", wrapper.PostLogin)
 	router.POST(baseURL+"/users", wrapper.PostUsers)
 	router.GET(baseURL+"/windows", wrapper.GetWindows)
 

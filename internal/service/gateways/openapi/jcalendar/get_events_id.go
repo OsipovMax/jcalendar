@@ -28,6 +28,19 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 		return err
 	}
 
+	/*
+		move ->
+	*/
+	var (
+		uID     = c.Get("userID").(uint)
+		Details = e.Details
+	)
+
+	if uID != e.CreatorID {
+		Details = "Busy"
+	}
+	/**/
+
 	return c.JSON(
 		http.StatusOK,
 		jcalendarsrv.EventResponse{
@@ -37,7 +50,8 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 				UpdateAt:  pcaster(e.UpdatedAt.String()),
 				From:      &e.From,
 				Till:      &e.Till,
-				Details:   &e.Details,
+				Details:   &Details,
+				CreatorID: pcaster(int(e.CreatorID)),
 				IsPrivate: &e.IsPrivate,
 			},
 		},

@@ -232,6 +232,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /login:
+    post:
+      summary: Events information
+      description: Adds events information
+      tags:
+        - events
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     UserRequest:
@@ -297,7 +330,7 @@ components:
         Till:
           type: string
         CreatorID:
-          type: string
+          type: integer
         Details:
           type: string
         IsPrivate:
@@ -335,3 +368,12 @@ components:
       properties:
         ID:
           type: integer
+    TokenResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/TokenPayload'
+    TokenPayload:
+      type: object
+      properties:
+        Token:
+          type: string
