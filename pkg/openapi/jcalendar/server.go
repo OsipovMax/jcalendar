@@ -8,220 +8,98 @@ import (
 	"net/http"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
-	"github.com/go-chi/chi/v5"
+	"github.com/labstack/echo/v4"
 )
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// User information
 	// (POST /users)
-	PostUsers(w http.ResponseWriter, r *http.Request)
+	PostUsers(ctx echo.Context) error
 	// User information
 	// (GET /users/{email})
-	GetUsersEmail(w http.ResponseWriter, r *http.Request, email string)
+	GetUsersEmail(ctx echo.Context, email string) error
 	// User information
 	// (GET /users/{id})
-	GetUsersId(w http.ResponseWriter, r *http.Request, id string)
+	GetUsersId(ctx echo.Context, id string) error
 }
 
-// ServerInterfaceWrapper converts contexts to parameters.
+// ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler            ServerInterface
-	HandlerMiddlewares []MiddlewareFunc
-	ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
+	Handler ServerInterface
 }
 
-type MiddlewareFunc func(http.HandlerFunc) http.HandlerFunc
-
-// PostUsers operation middleware
-func (siw *ServerInterfaceWrapper) PostUsers(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostUsers(w, r)
-	}
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler(w, r.WithContext(ctx))
-}
-
-// GetUsersEmail operation middleware
-func (siw *ServerInterfaceWrapper) GetUsersEmail(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
+// PostUsers converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 	var err error
 
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostUsers(ctx)
+	return err
+}
+
+// GetUsersEmail converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersEmail(ctx echo.Context) error {
+	var err error
 	// ------------- Path parameter "email" -------------
 	var email string
 
-	err = runtime.BindStyledParameter("simple", false, "email", chi.URLParam(r, "email"), &email)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "email", runtime.ParamLocationPath, ctx.Param("email"), &email)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "email", Err: err})
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter email: %s", err))
 	}
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUsersEmail(w, r, email)
-	}
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler(w, r.WithContext(ctx))
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersEmail(ctx, email)
+	return err
 }
 
-// GetUsersId operation middleware
-func (siw *ServerInterfaceWrapper) GetUsersId(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
+// GetUsersId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersId(ctx echo.Context) error {
 	var err error
-
 	// ------------- Path parameter "id" -------------
 	var id string
 
-	err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUsersId(w, r, id)
-	}
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler(w, r.WithContext(ctx))
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersId(ctx, id)
+	return err
 }
 
-type UnescapedCookieParamError struct {
-	ParamName string
-	Err       error
+// This is a simple interface which specifies echo.Route addition functions which
+// are present on both echo.Echo and echo.Group, since we want to allow using
+// either of them for path registration
+type EchoRouter interface {
+	CONNECT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	HEAD(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	OPTIONS(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	PATCH(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	TRACE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
 }
 
-func (e *UnescapedCookieParamError) Error() string {
-	return fmt.Sprintf("error unescaping cookie parameter '%s'", e.ParamName)
+// RegisterHandlers adds each server route to the EchoRouter.
+func RegisterHandlers(router EchoRouter, si ServerInterface) {
+	RegisterHandlersWithBaseURL(router, si, "")
 }
 
-func (e *UnescapedCookieParamError) Unwrap() error {
-	return e.Err
-}
+// Registers handlers, and prepends BaseURL to the paths, so that the paths
+// can be served under a prefix.
+func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL string) {
 
-type UnmarshalingParamError struct {
-	ParamName string
-	Err       error
-}
-
-func (e *UnmarshalingParamError) Error() string {
-	return fmt.Sprintf("Error unmarshaling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
-}
-
-func (e *UnmarshalingParamError) Unwrap() error {
-	return e.Err
-}
-
-type RequiredParamError struct {
-	ParamName string
-}
-
-func (e *RequiredParamError) Error() string {
-	return fmt.Sprintf("Query argument %s is required, but not found", e.ParamName)
-}
-
-type RequiredHeaderError struct {
-	ParamName string
-	Err       error
-}
-
-func (e *RequiredHeaderError) Error() string {
-	return fmt.Sprintf("Header parameter %s is required, but not found", e.ParamName)
-}
-
-func (e *RequiredHeaderError) Unwrap() error {
-	return e.Err
-}
-
-type InvalidParamFormatError struct {
-	ParamName string
-	Err       error
-}
-
-func (e *InvalidParamFormatError) Error() string {
-	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
-}
-
-func (e *InvalidParamFormatError) Unwrap() error {
-	return e.Err
-}
-
-type TooManyValuesForParamError struct {
-	ParamName string
-	Count     int
-}
-
-func (e *TooManyValuesForParamError) Error() string {
-	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
-}
-
-// Handler creates http.Handler with routing matching OpenAPI spec.
-func Handler(si ServerInterface) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{})
-}
-
-type ChiServerOptions struct {
-	BaseURL          string
-	BaseRouter       chi.Router
-	Middlewares      []MiddlewareFunc
-	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
-}
-
-// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
-func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{
-		BaseRouter: r,
-	})
-}
-
-func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{
-		BaseURL:    baseURL,
-		BaseRouter: r,
-	})
-}
-
-// HandlerWithOptions creates http.Handler with additional options
-func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
-	r := options.BaseRouter
-
-	if r == nil {
-		r = chi.NewRouter()
-	}
-	if options.ErrorHandlerFunc == nil {
-		options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-	}
 	wrapper := ServerInterfaceWrapper{
-		Handler:            si,
-		HandlerMiddlewares: options.Middlewares,
-		ErrorHandlerFunc:   options.ErrorHandlerFunc,
+		Handler: si,
 	}
 
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/users", wrapper.PostUsers)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{email}", wrapper.GetUsersEmail)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{id}", wrapper.GetUsersId)
-	})
+	router.POST(baseURL+"/users", wrapper.PostUsers)
+	router.GET(baseURL+"/users/:email", wrapper.GetUsersEmail)
+	router.GET(baseURL+"/users/:id", wrapper.GetUsersId)
 
-	return r
 }

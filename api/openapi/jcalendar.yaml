@@ -113,6 +113,74 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /events/{id}:
+    get:
+      summary: Event information
+      description: Returns event information
+      tags:
+        - events
+      parameters:
+        - name: id
+          in: path
+          description: events identificator
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /events:
+    post:
+      summary: Events information
+      description: Returns events information
+      tags:
+        - events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventResponse'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+        "422":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     UserReponse:
@@ -148,6 +216,42 @@ components:
           type: string
         TimeZoneOffset:
           type: integer
+    EventResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/OutputEvents'
+    InputEvents:
+      type: object
+      properties:
+        From:
+          type: string
+        Till:
+          type: string
+        CreatorID:
+          type: string
+        Details:
+          type: string
+        IsPrivate:
+          type: boolean
+    OutputEvents:
+      type: object
+      properties:
+        ID:
+          type: integer
+        CreateAt:
+          type: string
+        UpdateAt:
+          type: string
+        From:
+          type: string
+        Till:
+          type: string
+        CreatorID:
+          type: string
+        Details:
+          type: string
+        IsPrivate:
+          type: boolean
     ErrorResponse:
       type: object
       properties:

@@ -1,6 +1,9 @@
 package user
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type User struct {
 	ID             uint      `json:"id"`
@@ -10,4 +13,17 @@ type User struct {
 	LastName       string    `json:"last_name"`
 	Email          string    `json:"email"`
 	TimeZoneOffset int       `json:"time_zone_offset"`
+}
+
+func NewUser(
+	_ context.Context,
+	firstName, lastName, email string,
+	timeZoneOffset int,
+) *User {
+	return &User{
+		FirstName:      firstName,
+		LastName:       lastName,
+		Email:          email,
+		TimeZoneOffset: timeZoneOffset,
+	}
 }

@@ -13,7 +13,8 @@ CREATE TABLE events
         FOREIGN KEY (creator_id)
             REFERENCES users (id),
     details    TEXT,
-    is_private BOOLEAN                     NOT NULL
+    is_private BOOLEAN                     NOT NULL,
+    is_repeat  BOOLEAN                     NOT NULL
 );
 
 -- +goose StatementEnd
