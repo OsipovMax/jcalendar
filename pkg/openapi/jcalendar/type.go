@@ -81,22 +81,6 @@ type OutputEvent struct {
 	UpdateAt  *string `json:"UpdateAt,omitempty"`
 }
 
-// OutputUser defines model for OutputUser.
-type OutputUser struct {
-	CreateAt       *string `json:"CreateAt,omitempty"`
-	Email          *string `json:"Email,omitempty"`
-	FirstName      *string `json:"FirstName,omitempty"`
-	ID             *int    `json:"ID,omitempty"`
-	LastName       *string `json:"LastName,omitempty"`
-	TimeZoneOffset *int    `json:"TimeZoneOffset,omitempty"`
-	UpdateAt       *string `json:"UpdateAt,omitempty"`
-}
-
-// UserReponse defines model for UserReponse.
-type UserReponse struct {
-	Data *OutputUser `json:"data,omitempty"`
-}
-
 // UserRequest defines model for UserRequest.
 type UserRequest struct {
 	Data *InputUser `json:"data,omitempty"`

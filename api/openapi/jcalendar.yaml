@@ -7,82 +7,6 @@ info:
 servers:
   - url: /api
 paths:
-  /users/{id}:
-    get:
-      summary: Returns user information
-      description: Return information about user by ID
-      tags:
-        - user
-      parameters:
-        - name: id
-          in: path
-          description: user ID
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserReponse'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /users/{email}:
-    get:
-      summary: Returns user information
-      description: Returns user information
-      tags:
-        - user
-      parameters:
-        - name: email
-          in: path
-          description: user email
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserReponse'
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /users:
     post:
       summary: Adds user information
@@ -310,33 +234,11 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    UserReponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/OutputUser'
     UserRequest:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/InputUser'
-    OutputUser:
-      type: object
-      properties:
-        ID:
-          type: integer
-        CreateAt:
-          type: string
-        UpdateAt:
-          type: string
-        FirstName:
-          type: string
-        LastName:
-          type: string
-        Email:
-          type: string
-        TimeZoneOffset:
-          type: integer
     InputUser:
       type: object
       properties:

@@ -28,12 +28,6 @@ type ServerInterface interface {
 	// Adds user information
 	// (POST /users)
 	PostUsers(ctx echo.Context) error
-	// Returns user information
-	// (GET /users/{email})
-	GetUsersEmail(ctx echo.Context, email string) error
-	// Returns user information
-	// (GET /users/{id})
-	GetUsersId(ctx echo.Context, id string) error
 	// Returns closets free window for meeting
 	// (GET /windows)
 	GetWindows(ctx echo.Context, params GetWindowsParams) error
@@ -126,38 +120,6 @@ func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 	return err
 }
 
-// GetUsersEmail converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersEmail(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "email" -------------
-	var email string
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "email", runtime.ParamLocationPath, ctx.Param("email"), &email)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter email: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersEmail(ctx, email)
-	return err
-}
-
-// GetUsersId converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersId(ctx, id)
-	return err
-}
-
 // GetWindows converts echo context to params.
 func (w *ServerInterfaceWrapper) GetWindows(ctx echo.Context) error {
 	var err error
@@ -209,8 +171,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/events/:user_id", wrapper.GetEventsUserId)
 	router.PUT(baseURL+"/invites/:id", wrapper.PutInvitesId)
 	router.POST(baseURL+"/users", wrapper.PostUsers)
-	router.GET(baseURL+"/users/:email", wrapper.GetUsersEmail)
-	router.GET(baseURL+"/users/:id", wrapper.GetUsersId)
 	router.GET(baseURL+"/windows", wrapper.GetWindows)
 
 }
