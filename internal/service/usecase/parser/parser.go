@@ -1,4 +1,4 @@
-package scheduler
+package parser
 
 import (
 	"context"
@@ -8,8 +8,7 @@ import (
 	"strings"
 	"time"
 
-	eevent "jcalendar/internal/service/entity/event"
-	cmdscheduler "jcalendar/internal/service/usecase/commands/scheduler"
+	eschedule "jcalendar/internal/service/entity/schedule"
 )
 
 const (
@@ -42,45 +41,47 @@ ENDING_MODE=NONE or DATE or REPEAT_COUNT
 INTERVAL=1+
 */
 
-type EventScheduler struct {
-	EventSchedulerCmdHandler *cmdscheduler.CreateEventScheduleCommandHandler
+type ScheduleParser struct{}
+
+func NewScheduleParser(_ context.Context) *ScheduleParser {
+	return &ScheduleParser{}
 }
 
-func NewEventScheduler(_ context.Context, handler *cmdscheduler.CreateEventScheduleCommandHandler) *EventScheduler {
-	return &EventScheduler{
-		EventSchedulerCmdHandler: handler,
-	}
-}
+//func (e *EventScheduler) HandleAndSaveSchedules(ctx context.Context, event *eevent.Event) error {
+//	cmds, err := e.handleRule(ctx, event)
+//	if err != nil {
+//		return err
+//	}
+//
+//	//TODO: replace on batch insert
+//	for idx := range cmds {
+//		_, err := e.EventSchedulerCmdHandler.Handle(ctx, &cmds[idx])
+//	}
+//
+//	return nil
+//}
 
-func (e *EventScheduler) HandleAndSaveSchedules(ctx context.Context, event *eevent.Event) error {
-	_, err := e.handleRule(ctx, event)
-	if err != nil {
-		return err
-	}
-
-	//TODO: save schedules
-
-	return nil
-}
-
-func (e *EventScheduler) handleRule(ctx context.Context, event *eevent.Event) ([]cmdscheduler.CreateEventScheduleCommand, error) {
-	parts := strings.Split(event.ScheduleRule, ";")
+func (e *ScheduleParser) HandleRule(
+	ctx context.Context,
+	eventFrom time.Time,
+	eventScheduleRule string,
+) ([]*eschedule.EventSchedule, error) {
+	parts := strings.Split(eventScheduleRule, ";")
 
 	if len(parts) == 0 {
 		return nil, errors.New("invalid rule expr")
 	}
 
-	return e.tokenize(ctx, event.ID, event.From, parts)
+	return e.tokenize(ctx, eventFrom, parts)
 }
 
-func (e *EventScheduler) tokenize(
+func (e *ScheduleParser) tokenize(
 	_ context.Context,
-	eventID uint,
 	eventStartedTimestamp time.Time,
 	parts []string,
-) ([]cmdscheduler.CreateEventScheduleCommand, error) {
+) ([]*eschedule.EventSchedule, error) {
 	var (
-		cmd         = cmdscheduler.CreateEventScheduleCommand{EventID: eventID, BeginOccurrence: eventStartedTimestamp}
+		schedule    = &eschedule.EventSchedule{BeginOccurrence: eventStartedTimestamp}
 		strDaysList string
 	)
 
@@ -93,32 +94,32 @@ func (e *EventScheduler) tokenize(
 
 		switch part[0] {
 		case schedulerModeKey:
-			cmd.SchedulerType = part[1]
+			schedule.SchedulerType = part[1]
 		case endingModeKey:
-			cmd.EndingMode = part[1]
+			schedule.EndingMode = part[1]
 		case intervalKey:
 			intervalVal, err := strconv.Atoi(part[1])
 			if err != nil {
 				return nil, errors.New("invalid interval part")
 			}
 
-			cmd.IntervalVal = intervalVal
+			schedule.IntervalVal = intervalVal
 		case dayModeKey:
 			isRegular, err := strconv.ParseBool(part[1])
 			if err != nil {
 				return nil, errors.New("invalid isEachDay part")
 			}
 
-			cmd.IsRegular = isRegular
+			schedule.IsRegular = isRegular
 		case EndOccurrenceKey:
 			t, err := time.Parse(time.RFC3339, part[1])
 			if err != nil {
 				return nil, errors.New("invalid EndOccurrence part")
 			}
 
-			cmd.EndOccurrence = t
+			schedule.EndOccurrence = t
 		case shiftKey:
-			cmd.Shift = part[1]
+			schedule.Shift = part[1]
 		case CustomDayListKey:
 			strDaysList = part[1]
 		default:
@@ -135,9 +136,9 @@ func (e *EventScheduler) tokenize(
 
 	*/
 
-	if cmd.SchedulerType == customSchedulerMode && len(strDaysList) != 0 {
-		curWeekday := cmd.BeginOccurrence.Weekday()
-		var cmdList []cmdscheduler.CreateEventScheduleCommand
+	if schedule.SchedulerType == customSchedulerMode && len(strDaysList) != 0 {
+		curWeekday := schedule.BeginOccurrence.Weekday()
+		var scheduleList []*eschedule.EventSchedule
 		for _, strDay := range strings.Split(strDaysList, ",") {
 			day, err := strconv.Atoi(strDay)
 			if err != nil {
@@ -146,12 +147,29 @@ func (e *EventScheduler) tokenize(
 
 			delta := (day - int(curWeekday) + 7) % 7
 
-			cmd.BeginOccurrence.Add(time.Duration(delta * 24))
-			cmdList = append(cmdList, cmd)
+			cSchedule := copySchedule(schedule)
+			cSchedule.BeginOccurrence = cSchedule.BeginOccurrence.AddDate(0, 0, delta)
+			scheduleList = append(scheduleList, cSchedule)
 		}
 
-		return cmdList, nil
+		return scheduleList, nil
 	}
 
-	return []cmdscheduler.CreateEventScheduleCommand{cmd}, nil
+	return []*eschedule.EventSchedule{schedule}, nil
+}
+
+func copySchedule(s *eschedule.EventSchedule) *eschedule.EventSchedule {
+	return &eschedule.EventSchedule{
+		ID:              s.ID,
+		CreatedAt:       s.CreatedAt,
+		UpdatedAt:       s.UpdatedAt,
+		BeginOccurrence: s.BeginOccurrence,
+		EndOccurrence:   s.EndOccurrence,
+		EndingMode:      s.EndingMode,
+		IntervalVal:     s.IntervalVal,
+		Shift:           s.Shift,
+		IsRegular:       s.IsRegular,
+		SchedulerType:   s.SchedulerType,
+		EventID:         s.EventID,
+	}
 }

@@ -16,6 +16,7 @@ type CreateEventCommand struct {
 	Creator         *euser.User
 	ParticipantsIDs []uint
 	Details         string
+	ScheduleRule    string
 	IsPrivate       bool
 	IsRepeat        bool
 }
@@ -25,6 +26,7 @@ func NewCreateEventCommand(
 	from, till string,
 	creatorID uint,
 	participantsIDs []int,
+	scheduleRule string,
 	details string,
 	isPrivate, isRepeat bool,
 ) (*CreateEventCommand, error) {
@@ -61,6 +63,7 @@ func NewCreateEventCommand(
 		CreatorID:       creatorID,
 		ParticipantsIDs: tmp,
 		Details:         details,
+		ScheduleRule:    scheduleRule,
 		IsRepeat:        isRepeat,
 		IsPrivate:       isPrivate,
 	}, nil

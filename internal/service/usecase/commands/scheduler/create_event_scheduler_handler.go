@@ -16,6 +16,23 @@ func NewCreateEventScheduleCommandHandler(creator Creator) CreateEventScheduleCo
 	return CreateEventScheduleCommandHandler{creator: creator}
 }
 
-func (ch *CreateEventScheduleCommandHandler) Handle(ctx context.Context, command *CreateEventScheduleCommandHandler) (uint, error) {
+func (ch *CreateEventScheduleCommandHandler) Handle(ctx context.Context, command *CreateEventScheduleCommand) (uint, error) {
+	//es := schedule.NewEventsSchedule(
+	//	ctx,
+	//	command.BeginOccurrence,
+	//	command.EndOccurrence,
+	//	command.EndingMode,
+	//	command.Shift,
+	//	command.SchedulerType,
+	//	command.IntervalVal,
+	//	command.IsRegular,
+	//	command.EventID,
+	//)
+	//
+	//_, err := ch.creator.CreateInvite(ctx, i)
+	//if err != nil {
+	//	return 0, err
+	//}
+
 	return 0, nil
 }

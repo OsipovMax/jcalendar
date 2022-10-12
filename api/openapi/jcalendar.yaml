@@ -285,6 +285,23 @@ components:
           type: string
         TimeZoneOffset:
           type: integer
+    OutputUser:
+      type: object
+      properties:
+        ID:
+          type: integer
+        CreateAt:
+          type: string
+        UpdateAt:
+          type: string
+        FirstName:
+          type: string
+        LastName:
+          type: string
+        Email:
+          type: string
+        TimeZoneOffset:
+          type: integer
     EventRequest:
       type: object
       properties:
@@ -317,6 +334,8 @@ components:
             type: integer
         Details:
           type: string
+        ScheduleRule:
+          type: string
         IsPrivate:
           type: boolean
         IsRepeat:
@@ -334,11 +353,19 @@ components:
           type: string
         Till:
           type: string
-        CreatorID:
-          type: integer
+        Creator:
+          $ref: '#/components/schemas/OutputUser'
+        Participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutputUser'
         Details:
           type: string
+        ScheduleRule:
+          type: string
         IsPrivate:
+          type: boolean
+        IsRepeat:
           type: boolean
     InviteUpdateRequest:
       type: object

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	qrevent "jcalendar/internal/service/usecase/queries/event"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
 	"github.com/labstack/echo/v4"
@@ -18,13 +17,48 @@ func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcal
 		return err
 	}
 
-	_, err = qrevent.NewQuery(ctx, uint(iid))
+	es, err := s.application.EventExtractor.GetEventsInInterval(ctx, uint(iid), params.From, params.Till)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(
-		http.StatusOK,
-		jcalendarsrv.EventsResponse{},
-	)
+	outputEvents := make([]jcalendarsrv.OutputEvent, len(es), len(es))
+	for idx, e := range es {
+		participants := make([]jcalendarsrv.OutputUser, len(e.Users), len(e.Users))
+		for uidx, p := range e.Users {
+			participants[uidx] = jcalendarsrv.OutputUser{
+				ID:             pcaster(int(p.ID)),
+				CreateAt:       pcaster(p.CreatedAt.String()),
+				UpdateAt:       pcaster(p.UpdatedAt.String()),
+				FirstName:      &p.FirstName,
+				LastName:       &p.LastName,
+				Email:          &p.Email,
+				TimeZoneOffset: &p.TimeZoneOffset,
+			}
+		}
+
+		outputEvents[idx] = jcalendarsrv.OutputEvent{
+			ID:       pcaster(int(e.ID)),
+			CreateAt: pcaster(e.CreatedAt.String()),
+			UpdateAt: pcaster(e.UpdatedAt.String()),
+			From:     pcaster(e.From.String()),
+			Till:     pcaster(e.Till.String()),
+			Creator: &jcalendarsrv.OutputUser{
+				ID:             pcaster(int(e.Creator.ID)),
+				CreateAt:       pcaster(e.Creator.CreatedAt.String()),
+				UpdateAt:       pcaster(e.Creator.UpdatedAt.String()),
+				FirstName:      &e.Creator.FirstName,
+				LastName:       &e.Creator.LastName,
+				Email:          &e.Creator.Email,
+				TimeZoneOffset: &e.Creator.TimeZoneOffset,
+			},
+			Participants: &participants,
+			Details:      &e.Details,
+			ScheduleRule: &e.ScheduleRule,
+			IsPrivate:    &e.IsPrivate,
+			IsRepeat:     &e.IsRepeat,
+		}
+	}
+
+	return c.JSON(http.StatusOK, jcalendarsrv.EventsResponse{Data: &outputEvents})
 }

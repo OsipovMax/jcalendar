@@ -4,6 +4,7 @@ import (
 	"context"
 
 	eevent "jcalendar/internal/service/entity/event"
+	"jcalendar/internal/service/usecase/parser"
 )
 
 type Creator interface {
@@ -12,13 +13,19 @@ type Creator interface {
 
 type CreateEventCommandHandler struct {
 	creator Creator
+	sparser *parser.ScheduleParser
 }
 
-func NewCreateEventCommandHandler(creator Creator) CreateEventCommandHandler {
-	return CreateEventCommandHandler{creator: creator}
+func NewCreateEventCommandHandler(creator Creator, sparser *parser.ScheduleParser) CreateEventCommandHandler {
+	return CreateEventCommandHandler{creator: creator, sparser: sparser}
 }
 
 func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *CreateEventCommand) (uint, error) {
+	rules, err := ch.sparser.HandleRule(ctx, command.From, command.ScheduleRule)
+	if err != nil {
+		return 0, err
+	}
+
 	e := eevent.NewEvent(
 		ctx,
 		command.From,
@@ -26,27 +33,15 @@ func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *Create
 		command.CreatorID,
 		command.ParticipantsIDs,
 		command.Details,
+		rules,
 		command.IsPrivate,
 		command.IsRepeat,
 	)
 
-	_, err := ch.creator.CreateEvent(ctx, e)
+	_, err = ch.creator.CreateEvent(ctx, e)
 	if err != nil {
 		return 0, err
 	}
-
-	//for _, participantID := range e.ParticipantsIDs {
-	//	var icmd *invite.CreateInviteCommand
-	//	icmd, err = invite.NewCreateInviteCommand(ctx, participantID, eID, false)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	_, err = s.application.Commands.CreateInvite.Handle(ctx, icmd)
-	//	if err != nil {
-	//		return err
-	//	}
-	//}
 
 	return e.ID, nil
 }

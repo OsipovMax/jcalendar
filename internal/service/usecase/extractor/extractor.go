@@ -2,6 +2,7 @@ package extractor
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	eevent "jcalendar/internal/service/entity/event"
@@ -15,18 +16,28 @@ const (
 	yearlyShiftKey  = "YEARLY"
 )
 
-type Extractor struct {
+type EventExtractor struct {
 	EventsInIntervalQueryHandler *qrevent.GetEventsInIntervalQueryHandler
 }
 
-func NewExtractor(_ context.Context, handler *qrevent.GetEventsInIntervalQueryHandler) *Extractor {
-	return &Extractor{
-		EventsInIntervalQueryHandler: handler,
+func NewEventExtractor(_ context.Context, handler qrevent.GetEventsInIntervalQueryHandler) *EventExtractor {
+	return &EventExtractor{
+		EventsInIntervalQueryHandler: &handler,
 	}
 }
 
-func (e *Extractor) GetEventsInInterval(ctx context.Context, userID uint, from, till time.Time) ([]*eevent.Event, error) {
-	q, err := qrevent.NewGetEventsInIntervalQuery(ctx, userID, from, till)
+func (e *EventExtractor) GetEventsInInterval(ctx context.Context, userID uint, from, till string) ([]*eevent.Event, error) {
+	ft, err := time.Parse(time.RFC3339, from)
+	if err != nil {
+		return nil, fmt.Errorf("invalid converting from data for getting events in interval: %w", err)
+	}
+
+	tt, err := time.Parse(time.RFC3339, till)
+	if err != nil {
+		return nil, fmt.Errorf("invalid converting till data for getting events in interval: %w", err)
+	}
+
+	q, err := qrevent.NewGetEventsInIntervalQuery(ctx, userID, ft, tt)
 	if err != nil {
 		return nil, err
 	}
@@ -38,41 +49,43 @@ func (e *Extractor) GetEventsInInterval(ctx context.Context, userID uint, from, 
 
 	fullEventsList := make([]*eevent.Event, 0)
 	for _, ev := range evs {
-		if !ev.IsRepeat && ev.Till.Before(till) {
+		if !ev.IsRepeat && ev.Till.Before(tt) {
 			fullEventsList = append(fullEventsList, ev)
 			continue
 		}
 
-		if ev.From.After(from) && ev.From.Before(till) {
-			fullEventsList = append(fullEventsList, ev)
-		}
-
-		var (
-			curTimestamp  = ev.Schedule.BeginOccurrence
-			eventDuration = ev.Till.Sub(ev.From)
-		)
-
-		/*
-			А не достигли ли мы конца интервала самого расписания
-		*/
-		for curTimestamp.Before(till) {
-			shift := ev.Schedule.SchedulerType // TODO SHIFT
-			switch shift {
-			case dailyShiftKey:
-				curTimestamp.AddDate(0, 0, 1)
-			case weeklyShiftKey:
-				curTimestamp.AddDate(0, 0, 7)
-			case monthlyShiftKey:
-				curTimestamp.AddDate(0, 1, 0)
-			case yearlyShiftKey:
-				curTimestamp.AddDate(1, 0, 0)
+		for _, sch := range ev.Schedule {
+			if ev.From.After(ft) && ev.From.Before(tt) {
+				fullEventsList = append(fullEventsList, ev)
 			}
 
-			if curTimestamp.Before(till) && curTimestamp.Add(eventDuration).Before(till) {
-				eventCopy := copyEvent(ev)
-				ev.From = curTimestamp
-				ev.Till = ev.From.Add(eventDuration)
-				fullEventsList = append(fullEventsList, eventCopy)
+			var (
+				curTimestamp  = sch.BeginOccurrence
+				eventDuration = ev.Till.Sub(ev.From)
+			)
+
+			/*
+				А не достигли ли мы конца интервала самого расписания ????
+			*/
+			for curTimestamp.Before(tt) {
+				shift := sch.Shift
+				switch shift {
+				case dailyShiftKey:
+					curTimestamp = curTimestamp.AddDate(0, 0, 1)
+				case weeklyShiftKey:
+					curTimestamp = curTimestamp.AddDate(0, 0, 7)
+				case monthlyShiftKey:
+					curTimestamp = curTimestamp.AddDate(0, 1, 0)
+				case yearlyShiftKey:
+					curTimestamp = curTimestamp.AddDate(1, 0, 0)
+				}
+
+				if curTimestamp.Before(tt) && curTimestamp.Add(eventDuration).Before(tt) {
+					eventCopy := copyEvent(ev)
+					ev.From = curTimestamp
+					ev.Till = ev.From.Add(eventDuration)
+					fullEventsList = append(fullEventsList, eventCopy)
+				}
 			}
 		}
 	}
@@ -90,7 +103,7 @@ func copyEvent(e *eevent.Event) *eevent.Event {
 		CreatorID:       e.CreatorID,
 		Creator:         e.Creator,
 		ParticipantsIDs: e.ParticipantsIDs,
-		Participants:    e.Participants,
+		Users:           e.Users,
 		Invites:         e.Invites,
 		Details:         e.Details,
 		ScheduleRule:    e.ScheduleRule,

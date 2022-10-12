@@ -39,6 +39,7 @@ func (r *Repository) CreateEvent(ctx context.Context, e *eevent.Event) (uint, er
 	}
 
 	e.Invites = invites
+
 	/*
 		----------------------------------------------------------------------------
 	*/

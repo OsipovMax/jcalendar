@@ -10,21 +10,21 @@ import (
 )
 
 type Event struct {
-	ID              uint                     `json:"id" gorm:"primaryKey"`
-	CreatedAt       time.Time                `json:"created_at"`
-	UpdatedAt       time.Time                `json:"updated_at"`
-	From            time.Time                `json:"from"`
-	Till            time.Time                `json:"till"`
-	CreatorID       uint                     `json:"-"`
-	Creator         *user.User               `json:"creator"`
-	ParticipantsIDs []uint                   `json:"-" gorm:"-"`
-	Users           []*user.User             `json:"users" gorm:"many2many:events_users"`
-	Invites         []*invite.Invite         `json:"invites"`
-	Details         string                   `json:"details"`
-	ScheduleRule    string                   `json:"schedule_rule"`
-	Schedule        *schedule.EventsSchedule `json:"-"`
-	IsPrivate       bool                     `json:"is_private"`
-	IsRepeat        bool                     `json:"is_repeat"`
+	ID              uint                      `json:"id" gorm:"primaryKey"`
+	CreatedAt       time.Time                 `json:"created_at"`
+	UpdatedAt       time.Time                 `json:"updated_at"`
+	From            time.Time                 `json:"from"`
+	Till            time.Time                 `json:"till"`
+	CreatorID       uint                      `json:"-"`
+	Creator         *user.User                `json:"creator"`
+	ParticipantsIDs []uint                    `json:"-" gorm:"-"`
+	Users           []*user.User              `json:"users" gorm:"many2many:events_users"`
+	Invites         []*invite.Invite          `json:"invites"`
+	Details         string                    `json:"details"`
+	ScheduleRule    string                    `json:"schedule_rule"`
+	Schedule        []*schedule.EventSchedule `json:"-"`
+	IsPrivate       bool                      `json:"is_private"`
+	IsRepeat        bool                      `json:"is_repeat"`
 }
 
 func NewEvent(
@@ -33,6 +33,7 @@ func NewEvent(
 	creatorID uint,
 	participantsIDs []uint,
 	details string,
+	eventSchedule []*schedule.EventSchedule,
 	isPrivate, isRepeat bool,
 ) *Event {
 	return &Event{
@@ -41,6 +42,7 @@ func NewEvent(
 		CreatorID:       creatorID,
 		ParticipantsIDs: participantsIDs,
 		Details:         details,
+		Schedule:        eventSchedule,
 		IsPrivate:       isPrivate,
 		IsRepeat:        isRepeat,
 	}

@@ -1,6 +1,7 @@
 package jcalendar
 
 import (
+	"fmt"
 	"net/http"
 
 	"jcalendar/internal/service/usecase/commands/event"
@@ -24,6 +25,7 @@ func (s *Server) PostEvents(c echo.Context) error {
 		*req.Data.Till,
 		uint(*req.Data.CreatorID),
 		*req.Data.Participants,
+		*req.Data.ScheduleRule,
 		*req.Data.Details,
 		*req.Data.IsPrivate,
 		*req.Data.IsRepeat,
@@ -34,6 +36,7 @@ func (s *Server) PostEvents(c echo.Context) error {
 
 	eID, err := s.application.Commands.CreateEvent.Handle(ctx, cmd)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
