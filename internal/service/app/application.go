@@ -1,6 +1,9 @@
 package app
 
 import (
+	"context"
+	"os"
+
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/invites"
 	"jcalendar/internal/service/repository/users"
@@ -11,7 +14,12 @@ import (
 	qrinvite "jcalendar/internal/service/usecase/queries/invite"
 	qruser "jcalendar/internal/service/usecase/queries/user"
 
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+)
+
+const (
+	postgresDSNKey = "POSTGRES"
 )
 
 type Application struct {
@@ -19,7 +27,12 @@ type Application struct {
 	Queries  Queries
 }
 
-func NewApplication(db *gorm.DB) *Application {
+func NewApplication(ctx context.Context) (*Application, error) {
+	db, err := NewDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	var (
 		erepo = events.NewRepository(db)
 		irepo = invites.NewRepository(db)
@@ -44,5 +57,18 @@ func NewApplication(db *gorm.DB) *Application {
 		},
 	}
 
-	return app
+	return app, nil
+}
+
+func NewDB(_ context.Context) (*gorm.DB, error) {
+	var (
+		dsn = os.Getenv(postgresDSNKey)
+	)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

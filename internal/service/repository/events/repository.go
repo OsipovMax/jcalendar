@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"fmt"
+	"time"
 
 	eevent "jcalendar/internal/service/entity/event"
 	euser "jcalendar/internal/service/entity/user"
@@ -12,6 +13,7 @@ import (
 
 const (
 	ParticipantsAssociations = "Users"
+	InvitesAssociations      = "Invites"
 )
 
 type Repository struct {
@@ -58,4 +60,19 @@ func (r *Repository) GetEventByID(ctx context.Context, id uint) (*eevent.Event, 
 	}
 
 	return e, err
+}
+
+func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from, till time.Time) ([]*eevent.Event, error) {
+	es := make([]*eevent.Event, 0)
+	err := r.db.WithContext(ctx).
+		Preload(InvitesAssociations, "user_id = ? AND is_accepted = true", userID).
+		Where("from >= ? AND till < ?", from, till).
+		Find(es).
+		Error
+
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, fmt.Errorf("invalid getting events in interval by id: %w", err)
+	}
+
+	return es, err
 }

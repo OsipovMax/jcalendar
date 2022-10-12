@@ -3,13 +3,14 @@ package event
 import (
 	"context"
 	"errors"
+	"time"
 
 	euser "jcalendar/internal/service/entity/user"
 )
 
 type CreateEventCommand struct {
-	From            string
-	Till            string
+	From            time.Time
+	Till            time.Time
 	CreatorID       uint
 	Creator         *euser.User
 	ParticipantsIDs []uint
@@ -20,17 +21,17 @@ type CreateEventCommand struct {
 
 func NewCreateEventCommand(
 	_ context.Context,
-	from, till string,
+	from, till time.Time,
 	creatorID uint,
 	participantsIDs []int,
 	details string,
 	isPrivate, isRepeat bool,
 ) (*CreateEventCommand, error) {
-	if from == "" {
+	if from.IsZero() {
 		return nil, errors.New("missing from value")
 	}
 
-	if till == "" {
+	if till.IsZero() {
 		return nil, errors.New("missing till value")
 	}
 
