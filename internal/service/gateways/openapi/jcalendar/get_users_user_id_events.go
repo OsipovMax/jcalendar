@@ -10,10 +10,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (s *Server) GetEventsUserId(c echo.Context, id string, params jcalendarsrv.GetEventsUserIdParams) error {
+func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcalendarsrv.GetUsersUserIdEventsParams) error {
 	ctx := c.Request().Context()
 
-	iid, err := strconv.Atoi(id)
+	iid, err := strconv.Atoi(userId)
 	if err != nil {
 		return err
 	}

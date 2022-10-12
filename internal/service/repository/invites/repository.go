@@ -36,11 +36,7 @@ func (r *Repository) CreateInvite(ctx context.Context, i *einvite.Invite) (uint,
 
 func (r *Repository) GetInviteByID(ctx context.Context, id uint) (*einvite.Invite, error) {
 	i := &einvite.Invite{}
-	err := r.db.WithContext(ctx).
-		Preload(UserAssociation).
-		Preload(EventAssociation).
-		First(i, id).
-		Error
+	err := r.db.WithContext(ctx).First(i, id).Error
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, fmt.Errorf("invalid getting invite by id: %w", err)

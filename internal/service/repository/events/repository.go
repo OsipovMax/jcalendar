@@ -6,6 +6,7 @@ import (
 	"time"
 
 	eevent "jcalendar/internal/service/entity/event"
+	einvite "jcalendar/internal/service/entity/invite"
 	euser "jcalendar/internal/service/entity/user"
 
 	"gorm.io/gorm"
@@ -27,10 +28,20 @@ func NewRepository(db *gorm.DB) *Repository {
 }
 
 func (r *Repository) CreateEvent(ctx context.Context, e *eevent.Event) (uint, error) {
-	participants := make([]*euser.User, 0, len(e.ParticipantsIDs))
+	/*
+		----------------------------------------------------------------------------
+	*/
+	users := make([]*euser.User, 0, len(e.ParticipantsIDs))
+	invites := make([]*einvite.Invite, 0, len(e.ParticipantsIDs))
 	for i := range e.ParticipantsIDs {
-		participants = append(participants, &euser.User{ID: uint(e.ParticipantsIDs[i])})
+		users = append(users, &euser.User{ID: e.ParticipantsIDs[i]})
+		invites = append(invites, &einvite.Invite{UserID: e.ParticipantsIDs[i], IsAccepted: false})
 	}
+
+	e.Invites = invites
+	/*
+		----------------------------------------------------------------------------
+	*/
 
 	err := r.db.WithContext(ctx).Create(e).Error
 	if err != nil {
@@ -40,7 +51,7 @@ func (r *Repository) CreateEvent(ctx context.Context, e *eevent.Event) (uint, er
 	err = r.db.WithContext(ctx).Model(&e).
 		Omit(fmt.Sprintf("%s.*", ParticipantsAssociations)).
 		Association(ParticipantsAssociations).
-		Append(participants)
+		Append(users)
 	if err != nil {
 		return 0, fmt.Errorf("invalid appending associated participants: %w", err)
 	}

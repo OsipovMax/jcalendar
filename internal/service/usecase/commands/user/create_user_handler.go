@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	euser "jcalendar/internal/service/entity/user"
 )
@@ -28,7 +27,7 @@ func (ch *CreateUserCommandHandler) Handle(ctx context.Context, command *CreateU
 		command.HashedPassword,
 		command.TimeZoneOffset,
 	)
-	fmt.Println("TIME2", u.TimeZoneOffset)
+
 	err := ch.creator.CreateUser(ctx, u)
 	if err != nil {
 		return 0, err

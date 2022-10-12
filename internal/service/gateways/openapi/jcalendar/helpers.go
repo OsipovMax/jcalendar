@@ -74,3 +74,7 @@ func getUserID(_ context.Context, token string) (uint, error) {
 
 	return 0, errors.New("missing userID claim")
 }
+
+func isResourceOwner(_ context.Context, resourceOwnerID, userID uint) bool {
+	return resourceOwnerID == userID
+}

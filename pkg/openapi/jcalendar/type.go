@@ -65,9 +65,14 @@ type InputUser struct {
 	TimeZoneOffset *int    `json:"TimeZoneOffset,omitempty"`
 }
 
+// InviteUpdate defines model for InviteUpdate.
+type InviteUpdate struct {
+	IsAccepted *bool `json:"IsAccepted,omitempty"`
+}
+
 // InviteUpdateRequest defines model for InviteUpdateRequest.
 type InviteUpdateRequest struct {
-	IsAccepted *bool `json:"IsAccepted,omitempty"`
+	Data *InviteUpdate `json:"Data,omitempty"`
 }
 
 // OutputEvent defines model for OutputEvent.
@@ -100,20 +105,20 @@ type UserRequest struct {
 // PostEventsJSONBody defines parameters for PostEvents.
 type PostEventsJSONBody = EventRequest
 
-// GetEventsUserIdParams defines parameters for GetEventsUserId.
-type GetEventsUserIdParams struct {
+// PutInvitesIdJSONBody defines parameters for PutInvitesId.
+type PutInvitesIdJSONBody = InviteUpdateRequest
+
+// PostUsersJSONBody defines parameters for PostUsers.
+type PostUsersJSONBody = UserRequest
+
+// GetUsersUserIdEventsParams defines parameters for GetUsersUserIdEvents.
+type GetUsersUserIdEventsParams struct {
 	// begin of interval
 	From string `form:"from" json:"from"`
 
 	// end of interval
 	Till string `form:"till" json:"till"`
 }
-
-// PutInvitesIdJSONBody defines parameters for PutInvitesId.
-type PutInvitesIdJSONBody = InviteUpdateRequest
-
-// PostUsersJSONBody defines parameters for PostUsers.
-type PostUsersJSONBody = UserRequest
 
 // GetWindowsParams defines parameters for GetWindows.
 type GetWindowsParams struct {

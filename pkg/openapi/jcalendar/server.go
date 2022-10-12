@@ -19,9 +19,6 @@ type ServerInterface interface {
 	// Event information
 	// (GET /events/{id})
 	GetEventsId(ctx echo.Context, id string) error
-	// Returns events information for user with user_id
-	// (GET /events/{user_id})
-	GetEventsUserId(ctx echo.Context, userId string, params GetEventsUserIdParams) error
 	// Updating status of invite
 	// (PUT /invites/{id})
 	PutInvitesId(ctx echo.Context, id string) error
@@ -31,6 +28,9 @@ type ServerInterface interface {
 	// Adds user information
 	// (POST /users)
 	PostUsers(ctx echo.Context) error
+	// Returns events information for user with user_id
+	// (GET /users/{user_id}/events)
+	GetUsersUserIdEvents(ctx echo.Context, userId string, params GetUsersUserIdEventsParams) error
 	// Returns closets free window for meeting
 	// (GET /windows)
 	GetWindows(ctx echo.Context, params GetWindowsParams) error
@@ -66,38 +66,6 @@ func (w *ServerInterfaceWrapper) GetEventsId(ctx echo.Context) error {
 	return err
 }
 
-// GetEventsUserId converts echo context to params.
-func (w *ServerInterfaceWrapper) GetEventsUserId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "user_id" -------------
-	var userId string
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "user_id", runtime.ParamLocationPath, ctx.Param("user_id"), &userId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter user_id: %s", err))
-	}
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetEventsUserIdParams
-	// ------------- Required query parameter "from" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "from", ctx.QueryParams(), &params.From)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter from: %s", err))
-	}
-
-	// ------------- Required query parameter "till" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "till", ctx.QueryParams(), &params.Till)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter till: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetEventsUserId(ctx, userId, params)
-	return err
-}
-
 // PutInvitesId converts echo context to params.
 func (w *ServerInterfaceWrapper) PutInvitesId(ctx echo.Context) error {
 	var err error
@@ -129,6 +97,38 @@ func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PostUsers(ctx)
+	return err
+}
+
+// GetUsersUserIdEvents converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersUserIdEvents(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "user_id" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "user_id", runtime.ParamLocationPath, ctx.Param("user_id"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter user_id: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetUsersUserIdEventsParams
+	// ------------- Required query parameter "from" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "from", ctx.QueryParams(), &params.From)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter from: %s", err))
+	}
+
+	// ------------- Required query parameter "till" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "till", ctx.QueryParams(), &params.Till)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter till: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersUserIdEvents(ctx, userId, params)
 	return err
 }
 
@@ -180,10 +180,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.POST(baseURL+"/events", wrapper.PostEvents)
 	router.GET(baseURL+"/events/:id", wrapper.GetEventsId)
-	router.GET(baseURL+"/events/:user_id", wrapper.GetEventsUserId)
 	router.PUT(baseURL+"/invites/:id", wrapper.PutInvitesId)
 	router.POST(baseURL+"/login", wrapper.PostLogin)
 	router.POST(baseURL+"/users", wrapper.PostUsers)
+	router.GET(baseURL+"/users/:user_id/events", wrapper.GetUsersUserIdEvents)
 	router.GET(baseURL+"/windows", wrapper.GetWindows)
 
 }

@@ -18,7 +18,7 @@ type Event struct {
 	CreatorID       uint                     `json:"-"`
 	Creator         *user.User               `json:"creator"`
 	ParticipantsIDs []uint                   `json:"-" gorm:"-"`
-	Participants    []*user.User             `json:"participants" gorm:"many2many:events_users"`
+	Users           []*user.User             `json:"users" gorm:"many2many:events_users"`
 	Invites         []*invite.Invite         `json:"invites"`
 	Details         string                   `json:"details"`
 	ScheduleRule    string                   `json:"schedule_rule"`

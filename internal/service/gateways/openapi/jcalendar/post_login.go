@@ -1,7 +1,6 @@
 package jcalendar
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -33,8 +32,7 @@ func (s *Server) PostLogin(c echo.Context) error {
 		username = c.FormValue(usernameKey)
 		password = c.FormValue(passwordKey)
 	)
-	fmt.Println("user: ", username)
-	fmt.Println("password: ", password)
+
 	query, err := qruser.NewUserByEmailQuery(username)
 	if err != nil {
 		return echo.NewHTTPError(500)

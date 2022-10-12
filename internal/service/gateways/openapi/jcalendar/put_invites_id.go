@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"jcalendar/internal/service/usecase/commands/invite"
+	cmdinvite "jcalendar/internal/service/usecase/commands/invite"
+	qrinvite "jcalendar/internal/service/usecase/queries/invite"
+
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
 	"github.com/labstack/echo/v4"
@@ -18,17 +20,31 @@ func (s *Server) PutInvitesId(c echo.Context, id string) error {
 		return err
 	}
 
+	gcmd, err := qrinvite.NewGetInviteQuery(ctx, uint(iid))
+	if err != nil {
+		return err
+	}
+
+	inv, err := s.application.Queries.GetInvite.Handle(ctx, gcmd)
+	if err != nil {
+		return err
+	}
+
+	if !isResourceOwner(ctx, inv.UserID, c.Get(userIDClaim).(uint)) {
+		return echo.ErrForbidden
+	}
+
 	req := &jcalendarsrv.InviteUpdateRequest{}
 	if err = c.Bind(req); err != nil {
 		return err
 	}
 
-	cmd, err := invite.NewUpdateInviteCommand(ctx, uint(iid), *req.IsAccepted) //TODO req.Data.IsAccepted
+	ucmd, err := cmdinvite.NewUpdateInviteCommand(ctx, uint(iid), *req.Data.IsAccepted)
 	if err != nil {
 		return err
 	}
 
-	_, err = s.application.Commands.UpdateInvite.Handle(ctx, cmd)
+	_, err = s.application.Commands.UpdateInvite.Handle(ctx, ucmd)
 	if err != nil {
 		return err
 	}
