@@ -9,11 +9,8 @@ CREATE TABLE events_scheduler
     end_occurrence   TIMESTAMP,
     ending_mode      TEXT                        NOT NULL,
     interval_val     INTEGER                     NOT NULL,
-    daily            BOOLEAN,
-    is_each_day      BOOLEAN,
-    weekly           BOOLEAN,
-    monthly          BOOLEAN,
-    yearly           BOOLEAN,
+    shift            TEXT                        NOT NULL CHECK (shift IN ('DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')),
+    is_regular       BOOLEAN,
     scheduler_type   TEXT                        NOT NULL,
     event_id         INTEGER                     NOT NULL,
     CONSTRAINT fk_events_scheduler_events

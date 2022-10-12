@@ -15,15 +15,10 @@ import (
 const (
 	customSchedulerMode = "CUSTOM"
 
-	dailyShiftKey   = "DAILY"
-	weeklyShiftKey  = "WEEKLY"
-	monthlyShiftKey = "MONTHLY"
-	yearlyShiftKey  = "YEARLY"
-
 	schedulerModeKey = "SCHEDULER_MODE"
 	endingModeKey    = "ENDING_MODE"
 	intervalKey      = "INTERVAL"
-	dayModeKey       = "IS_EACH_DAY"
+	dayModeKey       = "IS_REGULAR"
 	shiftKey         = "SHIFT"
 	EndOccurrenceKey = "END_OCCURRENCE"
 	CustomDayListKey = "CUSTOM_DAY_LIST"
@@ -42,7 +37,7 @@ ENDING_MODE=NONE
 INTERVAL=1
 -> Daily or Weekly or Monthly or Yearly
 -------
-SCHEDULER_MODE=CUSTOM;ENDING_MODE=NONE;INTERVAL=1;IS_EACH_DAY=TRUE;SHIFT=WEEKLY;CUSTOM_DAY_LIST=1,2,3;
+SCHEDULER_MODE=CUSTOM;ENDING_MODE=NONE;INTERVAL=1;IS_REGULAR=TRUE;SHIFT=WEEKLY;CUSTOM_DAY_LIST=1,2,3;
 ENDING_MODE=NONE or DATE or REPEAT_COUNT
 INTERVAL=1+
 */
@@ -109,12 +104,12 @@ func (e *EventScheduler) tokenize(
 
 			cmd.IntervalVal = intervalVal
 		case dayModeKey:
-			isEachDay, err := strconv.ParseBool(part[1])
+			isRegular, err := strconv.ParseBool(part[1])
 			if err != nil {
 				return nil, errors.New("invalid isEachDay part")
 			}
 
-			cmd.IsEachDay = isEachDay
+			cmd.IsRegular = isRegular
 		case EndOccurrenceKey:
 			t, err := time.Parse(time.RFC3339, part[1])
 			if err != nil {
@@ -123,16 +118,7 @@ func (e *EventScheduler) tokenize(
 
 			cmd.EndOccurrence = t
 		case shiftKey:
-			switch part[1] {
-			case dailyShiftKey:
-				cmd.Daily = true
-			case weeklyShiftKey:
-				cmd.Weekly = true
-			case monthlyShiftKey:
-				cmd.Monthly = true
-			case yearlyShiftKey:
-				cmd.Yearly = true
-			}
+			cmd.Shift = part[1]
 		case CustomDayListKey:
 			strDaysList = part[1]
 		default:

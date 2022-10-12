@@ -11,11 +11,8 @@ type CreateEventScheduleCommand struct {
 	EndOccurrence   time.Time
 	EndingMode      string
 	IntervalVal     int
-	Daily           bool
-	IsEachDay       bool
-	Weekly          bool
-	Monthly         bool
-	Yearly          bool
+	Shift           string
+	IsRegular       bool
 	SchedulerType   string
 	EventID         uint
 }
@@ -25,7 +22,8 @@ func NewCreateEventScheduleCommand(
 	beginOccurrence, endOccurrence time.Time,
 	endingMode, schedulerType string,
 	intervalVal int,
-	daily, weekly, monthly, yearly bool,
+	shift string,
+	isRegular bool,
 	eventID uint,
 ) (*CreateEventScheduleCommand, error) {
 	if endingMode == "" {
@@ -41,10 +39,8 @@ func NewCreateEventScheduleCommand(
 		EndOccurrence:   endOccurrence,
 		EndingMode:      endingMode,
 		IntervalVal:     intervalVal,
-		Daily:           daily,
-		Weekly:          weekly,
-		Monthly:         monthly,
-		Yearly:          yearly,
+		Shift:           shift,
+		IsRegular:       isRegular,
 		SchedulerType:   schedulerType,
 		EventID:         eventID,
 	}, nil
