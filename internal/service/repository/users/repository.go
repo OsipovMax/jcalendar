@@ -42,7 +42,11 @@ func (r *Repository) GetUserByID(ctx context.Context, id uint) (*euser.User, err
 func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*euser.User, error) {
 	u := euser.User{}
 
-	err := r.db.WithContext(ctx).First(&u, email).Error
+	err := r.db.
+		WithContext(ctx).
+		Where("email = ?", email).
+		First(&u).
+		Error
 	if err != nil {
 		return nil, fmt.Errorf("invalid getting user by email: %w", err)
 	}

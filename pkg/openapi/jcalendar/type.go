@@ -21,17 +21,17 @@ type ErrorResponse struct {
 
 // EventRequest defines model for EventRequest.
 type EventRequest struct {
-	Data *InputEvent `json:"data,omitempty"`
+	Data *InputEvent `json:"Data,omitempty"`
 }
 
 // EventResponse defines model for EventResponse.
 type EventResponse struct {
-	Data *OutputEvent `json:"data,omitempty"`
+	Data *OutputEvent `json:"Data,omitempty"`
 }
 
 // EventsResponse defines model for EventsResponse.
 type EventsResponse struct {
-	Data *[]OutputEvent `json:"data,omitempty"`
+	Data *[]OutputEvent `json:"Data,omitempty"`
 }
 
 // FreeWindow defines model for FreeWindow.
@@ -42,7 +42,7 @@ type FreeWindow struct {
 
 // FreeWindowResponse defines model for FreeWindowResponse.
 type FreeWindowResponse struct {
-	Data *FreeWindow `json:"data,omitempty"`
+	Data *FreeWindow `json:"Data,omitempty"`
 }
 
 // InputEvent defines model for InputEvent.
@@ -61,6 +61,7 @@ type InputUser struct {
 	Email          *string `json:"Email,omitempty"`
 	FirstName      *string `json:"FirstName,omitempty"`
 	LastName       *string `json:"LastName,omitempty"`
+	Password       *string `json:"Password,omitempty"`
 	TimeZoneOffset *int    `json:"TimeZoneOffset,omitempty"`
 }
 
@@ -88,12 +89,12 @@ type TokenPayload struct {
 
 // TokenResponse defines model for TokenResponse.
 type TokenResponse struct {
-	Data *TokenPayload `json:"data,omitempty"`
+	Data *TokenPayload `json:"Data,omitempty"`
 }
 
 // UserRequest defines model for UserRequest.
 type UserRequest struct {
-	Data *InputUser `json:"data,omitempty"`
+	Data *InputUser `json:"Data,omitempty"`
 }
 
 // PostEventsJSONBody defines parameters for PostEvents.

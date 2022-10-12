@@ -1,6 +1,7 @@
 package jcalendar
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -32,10 +33,11 @@ func (s *Server) PostLogin(c echo.Context) error {
 		username = c.FormValue(usernameKey)
 		password = c.FormValue(passwordKey)
 	)
-
+	fmt.Println("user: ", username)
+	fmt.Println("password: ", password)
 	query, err := qruser.NewUserByEmailQuery(username)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(500)
 	}
 
 	u, err := s.application.Queries.GetUserByEmail.Handle(ctx, query)
@@ -47,7 +49,7 @@ func (s *Server) PostLogin(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
 	}
 
-	st, err := getJWT(ctx, u.ID, username)
+	st, err := generateJWT(ctx, u.ID, username)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Please retry later")
 	}

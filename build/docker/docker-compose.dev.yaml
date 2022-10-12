@@ -4,6 +4,10 @@ services:
   app:
     env_file:
       - .env
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "9090:9090"
 
 volumes:
   kafka-data:

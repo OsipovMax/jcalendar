@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	euser "jcalendar/internal/service/entity/user"
@@ -21,17 +22,17 @@ type CreateEventCommand struct {
 
 func NewCreateEventCommand(
 	_ context.Context,
-	from, till time.Time,
+	from, till string,
 	creatorID uint,
 	participantsIDs []int,
 	details string,
 	isPrivate, isRepeat bool,
 ) (*CreateEventCommand, error) {
-	if from.IsZero() {
+	if from == "" {
 		return nil, errors.New("missing from value")
 	}
 
-	if till.IsZero() {
+	if till == "" {
 		return nil, errors.New("missing till value")
 	}
 
@@ -44,9 +45,19 @@ func NewCreateEventCommand(
 		tmp[idx] = uint(participantsIDs[idx])
 	}
 
+	ft, err := time.Parse(time.RFC3339, from)
+	if err != nil {
+		return nil, fmt.Errorf("invalid converting from data: %w", err)
+	}
+
+	tt, err := time.Parse(time.RFC3339, till)
+	if err != nil {
+		return nil, fmt.Errorf("invalid converting till data: %w", err)
+	}
+
 	return &CreateEventCommand{
-		From:            from,
-		Till:            till,
+		From:            ft,
+		Till:            tt,
 		CreatorID:       creatorID,
 		ParticipantsIDs: tmp,
 		Details:         details,

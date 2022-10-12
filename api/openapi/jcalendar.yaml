@@ -270,7 +270,7 @@ components:
     UserRequest:
       type: object
       properties:
-        data:
+        Data:
           $ref: '#/components/schemas/InputUser'
     InputUser:
       type: object
@@ -281,19 +281,21 @@ components:
           type: string
         Email:
           type: string
+        Password:
+          type: string
         TimeZoneOffset:
           type: integer
     EventRequest:
       properties:
-        data:
+        Data:
           $ref: '#/components/schemas/InputEvent'
     EventResponse:
       properties:
-        data:
+        Data:
           $ref: '#/components/schemas/OutputEvent'
     EventsResponse:
       properties:
-        data:
+        Data:
           type: array
           items:
             $ref: '#/components/schemas/OutputEvent'
@@ -349,7 +351,7 @@ components:
           type: integer
     FreeWindowResponse:
       properties:
-        data:
+        Data:
           $ref: '#/components/schemas/FreeWindow'
     FreeWindow:
       type: object
@@ -370,7 +372,7 @@ components:
           type: integer
     TokenResponse:
       properties:
-        data:
+        Data:
           $ref: '#/components/schemas/TokenPayload'
     TokenPayload:
       type: object

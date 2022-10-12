@@ -5,7 +5,9 @@ go 1.19
 require (
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/getkin/kin-openapi v0.104.0
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/labstack/echo/v4 v4.7.2
+	gorm.io/driver/postgres v1.4.4
 	gorm.io/gorm v1.24.0
 )
 
@@ -38,5 +40,4 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.4.4 // indirect
 )

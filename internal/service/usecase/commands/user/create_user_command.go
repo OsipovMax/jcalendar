@@ -10,9 +10,10 @@ type CreateUserCommand struct {
 	LastName       string
 	Email          string
 	TimeZoneOffset int
+	HashedPassword string
 }
 
-func NewCreateUserCommand(_ context.Context, firstName, lastName, email string, timeZoneOffset int) (*CreateUserCommand, error) {
+func NewCreateUserCommand(_ context.Context, firstName, lastName, email, hashedPassword string, timeZoneOffset int) (*CreateUserCommand, error) {
 	if firstName == "" {
 		return nil, errors.New("missing firstName value")
 	}
@@ -25,6 +26,10 @@ func NewCreateUserCommand(_ context.Context, firstName, lastName, email string, 
 		return nil, errors.New("missing email value")
 	}
 
+	if hashedPassword == "" {
+		return nil, errors.New("missing password value")
+	}
+
 	if timeZoneOffset < 0 {
 		return nil, errors.New("negative timeZoneOffset value")
 	}
@@ -34,5 +39,6 @@ func NewCreateUserCommand(_ context.Context, firstName, lastName, email string, 
 		LastName:       lastName,
 		Email:          email,
 		TimeZoneOffset: timeZoneOffset,
+		HashedPassword: hashedPassword,
 	}, nil
 }

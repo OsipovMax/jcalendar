@@ -23,6 +23,7 @@ func (s *Server) PostUsers(c echo.Context) error {
 		*req.Data.FirstName,
 		*req.Data.LastName,
 		*req.Data.Email,
+		calcHash(*req.Data.Password),
 		*req.Data.TimeZoneOffset,
 	)
 	if err != nil {
