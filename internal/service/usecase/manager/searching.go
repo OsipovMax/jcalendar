@@ -46,18 +46,25 @@ func (e *EventManager) getClosestFreeWindow(_ context.Context, intervals []*Inte
 		heap.Push(&intervalHeap, interval)
 	}
 
-	prevInterval := heap.Pop(&intervalHeap).(*Interval)
-	for intervalHeap.Len() > 0 {
-		interval := heap.Pop(&intervalHeap).(*Interval)
+	curInterval := heap.Pop(&intervalHeap).(*Interval)
 
-		if prevInterval.Till.Before(interval.From) && interval.From.Sub(prevInterval.Till) > winSize {
+	now := time.Now()
+
+	if curInterval.From.Sub(now) > winSize {
+		return now, now.Add(winSize)
+	}
+
+	for intervalHeap.Len() > 0 {
+		nextInterval := heap.Pop(&intervalHeap).(*Interval)
+
+		if nextInterval.From.Sub(curInterval.Till) > winSize {
 			break
 		} else {
-			if interval.Till.After(prevInterval.Till) {
-				prevInterval = interval
+			if nextInterval.Till.After(curInterval.Till) {
+				curInterval = nextInterval
 			}
 		}
 	}
 
-	return prevInterval.Till, prevInterval.Till.Add(winSize)
+	return curInterval.Till, curInterval.Till.Add(winSize)
 }

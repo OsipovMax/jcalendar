@@ -17,16 +17,6 @@ func main() {
 
 	e := echo.New()
 	e.Use(jcalendar.GetConfirmedUserMiddleware())
-	//e.Router().Add("GET", "/swagger", func(c echo.Context) error {
-	//	swagger, err := jcalendarsrv.GetSwagger()
-	//	if err != nil {
-	//		return echo.NewHTTPError(500, "come back later")
-	//	}
-	//
-	//	swagger.
-	//
-	//	return c.String(200)
-	//})
 
 	application, err := app.NewApplication(ctx)
 	if err != nil {

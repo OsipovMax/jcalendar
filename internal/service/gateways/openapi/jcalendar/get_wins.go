@@ -12,7 +12,7 @@ import (
 func (s *Server) GetWindows(c echo.Context, params jcalendarsrv.GetWindowsParams) error {
 	ctx := c.Request().Context()
 
-	from, till, err := s.application.Finder.GetClosestFreeWindow(ctx, params.UserIds, params.WinSize)
+	from, till, err := s.application.EventManager.GetClosestFreeWindow(ctx, params.UserIds, params.WinSize)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err

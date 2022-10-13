@@ -16,7 +16,7 @@ func TestGetClosestFreeWindow(t *testing.T) {
 		till        = time.Date(2022, 1, 1, 13, 0, 0, 0, time.Local)
 	)
 
-	f := NewEventManager(ctx, nil)
+	e := NewEventManager(ctx, nil)
 	table := []*struct {
 		TestSubTittle              string
 		Intervals                  []*Interval
@@ -74,11 +74,18 @@ func TestGetClosestFreeWindow(t *testing.T) {
 			ExpectedFrom: till,
 			ExpectedTill: till.Add(winDuration),
 		},
+		//{
+		//	TestSubTittle: "now___F1___T1",
+		//	Intervals:     []*Interval{{From: now, Till: till}},
+		//	WinDuration:   winDuration,
+		//	ExpectedFrom:  till,
+		//	ExpectedTill:  till.Add(winDuration),
+		//},
 	}
 
 	for _, row := range table {
 		t.Run(row.TestSubTittle, func(t *testing.T) {
-			actualFrom, actualTill := f.getClosestFreeWindow(ctx, row.Intervals, row.WinDuration)
+			actualFrom, actualTill := e.getClosestFreeWindow(ctx, row.Intervals, row.WinDuration)
 			require.Equal(t, row.ExpectedFrom, actualFrom)
 			require.Equal(t, row.ExpectedTill, actualTill)
 		})

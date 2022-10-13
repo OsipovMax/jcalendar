@@ -8,6 +8,7 @@ import (
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 func (s *Server) GetEventsId(c echo.Context, id string) error {
@@ -15,31 +16,26 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 
 	iid, err := strconv.Atoi(id)
 	if err != nil {
+		logrus.WithContext(ctx).Errorf("can`t convert string id param for getting events: %v", err)
 		return err
 	}
 
-	query, err := qrevent.NewQuery(ctx, uint(iid))
+	query, err := qrevent.NewGetEventQuery(ctx, uint(iid))
 	if err != nil {
+		logrus.WithContext(ctx).Errorf("can`t create query for getting events: %v", err)
 		return err
 	}
 
 	e, err := s.application.Queries.GetEvent.Handle(ctx, query)
 	if err != nil {
+		logrus.WithContext(ctx).Errorf("can`t execute query for getting events: %v", err)
 		return err
 	}
 
-	/*
-		move ->
-	*/
-	var (
-		uID     = c.Get("userID").(uint)
-		Details = e.Details
-	)
-
-	if uID != e.CreatorID {
-		Details = "Busy"
+	var details = e.Details
+	if !isResourceOwner(ctx, e.CreatorID, c.Get("userID").(uint)) {
+		details = busyEventDetail
 	}
-	/**/
 
 	return c.JSON(
 		http.StatusOK,
@@ -50,7 +46,7 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 				UpdateAt: pcaster(e.UpdatedAt.String()),
 				From:     pcaster(e.From.String()),
 				Till:     pcaster(e.Till.String()),
-				Details:  &Details,
+				Details:  &details,
 				Creator: &jcalendarsrv.OutputUser{
 					ID:             pcaster(int(e.User.ID)),
 					CreateAt:       pcaster(e.User.CreatedAt.String()),

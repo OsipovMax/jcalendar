@@ -9,7 +9,6 @@ import (
 type Commands struct {
 	CreateEvent cmdevent.CreateEventCommandHandler
 
-	CreateInvite cmdinvite.CreateInviteCommandHandler
 	UpdateInvite cmdinvite.UpdateInviteCommandHandler
 
 	CreateUser cmduser.CreateUserCommandHandler

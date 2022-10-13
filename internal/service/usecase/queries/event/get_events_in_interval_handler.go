@@ -15,8 +15,8 @@ type GetEventsInIntervalQueryHandler struct {
 	getter IntervalGetter
 }
 
-func NewGetEventsInIntervalQueryHandler(getter IntervalGetter) GetEventsInIntervalQueryHandler {
-	return GetEventsInIntervalQueryHandler{getter: getter}
+func NewGetEventsInIntervalQueryHandler(getter IntervalGetter) *GetEventsInIntervalQueryHandler {
+	return &GetEventsInIntervalQueryHandler{getter: getter}
 }
 
 func (ch *GetEventsInIntervalQueryHandler) Handle(ctx context.Context, query *GetEventsInIntervalQuery) ([]*eevent.Event, error) {

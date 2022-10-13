@@ -10,9 +10,7 @@ import (
 	cmdevent "jcalendar/internal/service/usecase/commands/event"
 	cmdinvite "jcalendar/internal/service/usecase/commands/invite"
 	cmduser "jcalendar/internal/service/usecase/commands/user"
-	"jcalendar/internal/service/usecase/extractor"
-	"jcalendar/internal/service/usecase/finder"
-	"jcalendar/internal/service/usecase/parser"
+	"jcalendar/internal/service/usecase/manager"
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 	qrinvite "jcalendar/internal/service/usecase/queries/invite"
 	qruser "jcalendar/internal/service/usecase/queries/user"
@@ -27,10 +25,9 @@ const (
 )
 
 type Application struct {
-	Commands       Commands
-	Queries        Queries
-	EventExtractor *extractor.EventExtractor
-	Finder         *finder.Finder
+	Commands     Commands
+	Queries      Queries
+	EventManager *manager.EventManager
 }
 
 func NewApplication(ctx context.Context) (*Application, error) {
@@ -45,13 +42,12 @@ func NewApplication(ctx context.Context) (*Application, error) {
 		urepo = users.NewRepository(db)
 	)
 
-	ext := extractor.NewEventExtractor(ctx, qrevent.NewGetEventsInIntervalQueryHandler(erepo))
+	m := manager.NewEventManager(ctx, qrevent.NewGetEventsInIntervalQueryHandler(erepo))
 
 	app := &Application{
 		Commands: Commands{
-			CreateEvent: cmdevent.NewCreateEventCommandHandler(erepo, parser.NewScheduleParser(ctx)),
+			CreateEvent: cmdevent.NewCreateEventCommandHandler(erepo, m),
 
-			CreateInvite: cmdinvite.NewCreateInviteCommandHandler(irepo),
 			UpdateInvite: cmdinvite.NewUpdateInviteCommandHandler(irepo),
 
 			CreateUser: cmduser.NewCreateUserCommandHandler(urepo),
@@ -65,9 +61,7 @@ func NewApplication(ctx context.Context) (*Application, error) {
 			GetInvite: qrinvite.NewGetInviteQueryHandler(irepo),
 		},
 
-		EventExtractor: ext,
-
-		Finder: finder.NewFinder(ctx, ext),
+		EventManager: m,
 	}
 
 	return app, nil

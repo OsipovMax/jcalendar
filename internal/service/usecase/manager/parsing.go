@@ -86,7 +86,7 @@ func (e *EventManager) tokenize(
 				return nil, err
 			}
 
-			delta := (day - int(curWeekday) + 7) % 7
+			delta := (day - int(curWeekday) + 7*schedule.IntervalVal) % 7
 
 			cSchedule := copySchedule(schedule)
 			cSchedule.BeginOccurrence = cSchedule.BeginOccurrence.AddDate(0, 0, delta)

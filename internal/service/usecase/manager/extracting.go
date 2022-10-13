@@ -9,6 +9,10 @@ import (
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 )
 
+const (
+	dataEndingMode = "DATA"
+)
+
 func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, from, till string) ([]*eevent.Event, error) {
 	ft, err := time.Parse(time.RFC3339, from)
 	if err != nil {
@@ -30,9 +34,13 @@ func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, fro
 		return nil, err
 	}
 
+	return e.extendWithScheduledEvents(ctx, evs, ft, tt)
+}
+
+func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eevent.Event, ft, tt time.Time) ([]*eevent.Event, error) {
 	fullEventsList := make([]*eevent.Event, 0)
 	for _, ev := range evs {
-		if !ev.IsRepeat && ev.From.After(ft) { // || ending_mode = "DATA"
+		if !ev.IsRepeat && (ev.From.Equal(ft) || ev.From.After(ft)) && ev.Till.Before(tt) {
 			fullEventsList = append(fullEventsList, ev)
 			continue
 		}
@@ -43,31 +51,33 @@ func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, fro
 				eventDuration = ev.Till.Sub(ev.From)
 			)
 
-			if timestamp.Equal(ft) || timestamp.After(ft) && timestamp.Before(tt) {
+			if (timestamp.Equal(ft) || timestamp.After(ft)) && timestamp.Before(tt) {
+				fmt.Println("!!!!!!!")
 				fullEventsList = append(fullEventsList, ev)
 			}
 
-			/*
-				А не достигли ли мы конца интервала самого расписания ????
-			*/
+			endTimeStamp := tt
+			if sch.EndingMode == dataEndingMode {
+				endTimeStamp = sch.EndOccurrence
+			}
 
-			for timestamp.Before(tt) {
+			for timestamp.Before(endTimeStamp) {
 				shift := sch.Shift
 				switch shift {
 				case dailyShiftKey:
-					timestamp = timestamp.AddDate(0, 0, 1)
+					timestamp = timestamp.AddDate(0, 0, 1*sch.IntervalVal)
 				case weeklyShiftKey:
-					timestamp = timestamp.AddDate(0, 0, 7)
+					timestamp = timestamp.AddDate(0, 0, 7*sch.IntervalVal)
 				case monthlyShiftKey:
-					timestamp = timestamp.AddDate(0, 1, 0)
+					timestamp = timestamp.AddDate(0, 1*sch.IntervalVal, 0)
 				case yearlyShiftKey:
-					timestamp = timestamp.AddDate(1, 0, 0)
+					timestamp = timestamp.AddDate(1*sch.IntervalVal, 0, 0)
 				}
-
+				fmt.Println(timestamp)
 				if timestamp.Before(tt) && timestamp.Add(eventDuration).Before(tt) {
 					eventCopy := copyEvent(ev)
-					ev.From = timestamp
-					ev.Till = ev.From.Add(eventDuration)
+					eventCopy.From = timestamp
+					eventCopy.Till = eventCopy.From.Add(eventDuration)
 					fullEventsList = append(fullEventsList, eventCopy)
 				}
 			}

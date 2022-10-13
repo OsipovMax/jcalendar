@@ -17,7 +17,7 @@ func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcal
 		return err
 	}
 
-	es, err := s.application.EventExtractor.GetEventsInInterval(ctx, uint(iid), params.From, params.Till)
+	es, err := s.application.EventManager.GetEventsInInterval(ctx, uint(iid), params.From, params.Till)
 	if err != nil {
 		return err
 	}
