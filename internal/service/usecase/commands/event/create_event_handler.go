@@ -4,6 +4,7 @@ import (
 	"context"
 
 	eevent "jcalendar/internal/service/entity/event"
+	"jcalendar/internal/service/entity/schedule"
 	"jcalendar/internal/service/usecase/parser"
 )
 
@@ -21,9 +22,13 @@ func NewCreateEventCommandHandler(creator Creator, sparser *parser.ScheduleParse
 }
 
 func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *CreateEventCommand) (uint, error) {
-	rules, err := ch.sparser.HandleRule(ctx, command.From, command.ScheduleRule)
-	if err != nil {
-		return 0, err
+	var schedules []*schedule.EventSchedule
+	if command.IsRepeat {
+		var err error
+		schedules, err = ch.sparser.HandleRule(ctx, command.From, command.ScheduleRule)
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	e := eevent.NewEvent(
@@ -33,12 +38,12 @@ func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *Create
 		command.CreatorID,
 		command.ParticipantsIDs,
 		command.Details,
-		rules,
+		schedules,
 		command.IsPrivate,
 		command.IsRepeat,
 	)
 
-	_, err = ch.creator.CreateEvent(ctx, e)
+	_, err := ch.creator.CreateEvent(ctx, e)
 	if err != nil {
 		return 0, err
 	}

@@ -145,6 +145,13 @@ func (w *ServerInterfaceWrapper) GetWindows(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter user_ids[]: %s", err))
 	}
 
+	// ------------- Required query parameter "win_size" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "win_size", ctx.QueryParams(), &params.WinSize)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter win_size: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetWindows(ctx, params)
 	return err

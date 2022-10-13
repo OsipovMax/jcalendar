@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE events_scheduler
+CREATE TABLE event_schedules
 (
     id               SERIAL PRIMARY KEY,
     created_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),

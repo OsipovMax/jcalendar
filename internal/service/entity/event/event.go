@@ -16,13 +16,13 @@ type Event struct {
 	From            time.Time                 `json:"from"`
 	Till            time.Time                 `json:"till"`
 	CreatorID       uint                      `json:"-"`
-	Creator         *user.User                `json:"creator"`
+	User            *user.User                `json:"creator" gorm:"foreignKey:CreatorID;references:ID"` //TODO
 	ParticipantsIDs []uint                    `json:"-" gorm:"-"`
 	Users           []*user.User              `json:"users" gorm:"many2many:events_users"`
 	Invites         []*invite.Invite          `json:"invites"`
 	Details         string                    `json:"details"`
 	ScheduleRule    string                    `json:"schedule_rule"`
-	Schedule        []*schedule.EventSchedule `json:"-"`
+	EventSchedules  []*schedule.EventSchedule `json:"-"`
 	IsPrivate       bool                      `json:"is_private"`
 	IsRepeat        bool                      `json:"is_repeat"`
 }
@@ -42,7 +42,7 @@ func NewEvent(
 		CreatorID:       creatorID,
 		ParticipantsIDs: participantsIDs,
 		Details:         details,
-		Schedule:        eventSchedule,
+		EventSchedules:  eventSchedule,
 		IsPrivate:       isPrivate,
 		IsRepeat:        isRepeat,
 	}

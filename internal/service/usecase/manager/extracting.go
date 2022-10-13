@@ -1,4 +1,4 @@
-package extractor
+package manager
 
 import (
 	"context"
@@ -9,24 +9,7 @@ import (
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 )
 
-const (
-	dailyShiftKey   = "DAILY"
-	weeklyShiftKey  = "WEEKLY"
-	monthlyShiftKey = "MONTHLY"
-	yearlyShiftKey  = "YEARLY"
-)
-
-type EventExtractor struct {
-	EventsInIntervalQueryHandler *qrevent.GetEventsInIntervalQueryHandler
-}
-
-func NewEventExtractor(_ context.Context, handler qrevent.GetEventsInIntervalQueryHandler) *EventExtractor {
-	return &EventExtractor{
-		EventsInIntervalQueryHandler: &handler,
-	}
-}
-
-func (e *EventExtractor) GetEventsInInterval(ctx context.Context, userID uint, from, till string) ([]*eevent.Event, error) {
+func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, from, till string) ([]*eevent.Event, error) {
 	ft, err := time.Parse(time.RFC3339, from)
 	if err != nil {
 		return nil, fmt.Errorf("invalid converting from data for getting events in interval: %w", err)
@@ -46,7 +29,7 @@ func (e *EventExtractor) GetEventsInInterval(ctx context.Context, userID uint, f
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(len(evs), "*******************")
+
 	fullEventsList := make([]*eevent.Event, 0)
 	for _, ev := range evs {
 		if !ev.IsRepeat && ev.From.After(ft) { // || ending_mode = "DATA"
@@ -54,7 +37,6 @@ func (e *EventExtractor) GetEventsInInterval(ctx context.Context, userID uint, f
 			continue
 		}
 
-		fmt.Println("**$*@#$*@*$*@*$*", ev.EventSchedules)
 		for _, sch := range ev.EventSchedules {
 			var (
 				timestamp     = sch.BeginOccurrence
@@ -93,24 +75,4 @@ func (e *EventExtractor) GetEventsInInterval(ctx context.Context, userID uint, f
 	}
 
 	return fullEventsList, nil
-}
-
-func copyEvent(e *eevent.Event) *eevent.Event {
-	return &eevent.Event{
-		ID:              e.ID,
-		CreatedAt:       e.CreatedAt,
-		UpdatedAt:       e.UpdatedAt,
-		From:            e.From,
-		Till:            e.Till,
-		CreatorID:       e.CreatorID,
-		User:            e.User,
-		ParticipantsIDs: e.ParticipantsIDs,
-		Users:           e.Users,
-		Invites:         e.Invites,
-		Details:         e.Details,
-		ScheduleRule:    e.ScheduleRule,
-		EventSchedules:  e.EventSchedules,
-		IsRepeat:        e.IsRepeat,
-		IsPrivate:       e.IsPrivate,
-	}
 }

@@ -138,7 +138,10 @@ type GetUsersUserIdEventsParams struct {
 // GetWindowsParams defines parameters for GetWindows.
 type GetWindowsParams struct {
 	// users identificators
-	UserIds []string `form:"user_ids[]" json:"user_ids[]"`
+	UserIds []int `form:"user_ids[]" json:"user_ids[]"`
+
+	// free windows size
+	WinSize string `form:"win_size" json:"win_size"`
 }
 
 // PostEventsJSONRequestBody defines body for PostEvents for application/json ContentType.

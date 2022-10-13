@@ -11,6 +11,7 @@ import (
 	cmdinvite "jcalendar/internal/service/usecase/commands/invite"
 	cmduser "jcalendar/internal/service/usecase/commands/user"
 	"jcalendar/internal/service/usecase/extractor"
+	"jcalendar/internal/service/usecase/finder"
 	"jcalendar/internal/service/usecase/parser"
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 	qrinvite "jcalendar/internal/service/usecase/queries/invite"
@@ -29,6 +30,7 @@ type Application struct {
 	Commands       Commands
 	Queries        Queries
 	EventExtractor *extractor.EventExtractor
+	Finder         *finder.Finder
 }
 
 func NewApplication(ctx context.Context) (*Application, error) {
@@ -42,6 +44,8 @@ func NewApplication(ctx context.Context) (*Application, error) {
 		irepo = invites.NewRepository(db)
 		urepo = users.NewRepository(db)
 	)
+
+	ext := extractor.NewEventExtractor(ctx, qrevent.NewGetEventsInIntervalQueryHandler(erepo))
 
 	app := &Application{
 		Commands: Commands{
@@ -61,7 +65,9 @@ func NewApplication(ctx context.Context) (*Application, error) {
 			GetInvite: qrinvite.NewGetInviteQueryHandler(irepo),
 		},
 
-		EventExtractor: extractor.NewEventExtractor(ctx, qrevent.NewGetEventsInIntervalQueryHandler(erepo)),
+		EventExtractor: ext,
+
+		Finder: finder.NewFinder(ctx, ext),
 	}
 
 	return app, nil
@@ -75,6 +81,7 @@ func NewDB(_ context.Context) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
+
 	if err != nil {
 		return nil, err
 	}

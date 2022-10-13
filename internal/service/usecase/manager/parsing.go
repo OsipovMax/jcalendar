@@ -1,4 +1,4 @@
-package parser
+package manager
 
 import (
 	"context"
@@ -11,43 +11,7 @@ import (
 	eschedule "jcalendar/internal/service/entity/schedule"
 )
 
-const (
-	customSchedulerMode = "CUSTOM"
-
-	schedulerModeKey = "SCHEDULER_MODE"
-	endingModeKey    = "ENDING_MODE"
-	intervalKey      = "INTERVAL"
-	dayModeKey       = "IS_REGULAR"
-	shiftKey         = "SHIFT"
-	EndOccurrenceKey = "END_OCCURRENCE"
-	CustomDayListKey = "CUSTOM_DAY_LIST"
-)
-
-/*
-RULE_SYNTAX:
-1. SCHEDULER_MODE=COMMON or CUSTOM
-2. ENDING_MODE=NONE or DATE or REPEAT_COUNT
-3. INTERVAL=1+
--------
-SCHEDULER_MODE=COMMON;ENDING_MODE=NONE;INTERVAL=1;IS_EACH_DAY=TRUE;SHIFT=DAILY;
-
-SCHEDULER_MODE=COMMON
-ENDING_MODE=NONE
-INTERVAL=1
--> Daily or Weekly or Monthly or Yearly
--------
-SCHEDULER_MODE=CUSTOM;ENDING_MODE=NONE;INTERVAL=1;IS_REGULAR=TRUE;SHIFT=WEEKLY;CUSTOM_DAY_LIST=1,2,3;
-ENDING_MODE=NONE or DATE or REPEAT_COUNT
-INTERVAL=1+
-*/
-
-type ScheduleParser struct{}
-
-func NewScheduleParser(_ context.Context) *ScheduleParser {
-	return &ScheduleParser{}
-}
-
-func (e *ScheduleParser) HandleRule(
+func (e *EventManager) HandleRule(
 	ctx context.Context,
 	eventFrom time.Time,
 	eventScheduleRule string,
@@ -61,7 +25,7 @@ func (e *ScheduleParser) HandleRule(
 	return e.tokenize(ctx, eventFrom, parts)
 }
 
-func (e *ScheduleParser) tokenize(
+func (e *EventManager) tokenize(
 	_ context.Context,
 	eventStartedTimestamp time.Time,
 	parts []string,
@@ -133,20 +97,4 @@ func (e *ScheduleParser) tokenize(
 	}
 
 	return []*eschedule.EventSchedule{schedule}, nil
-}
-
-func copySchedule(s *eschedule.EventSchedule) *eschedule.EventSchedule {
-	return &eschedule.EventSchedule{
-		ID:              s.ID,
-		CreatedAt:       s.CreatedAt,
-		UpdatedAt:       s.UpdatedAt,
-		BeginOccurrence: s.BeginOccurrence,
-		EndOccurrence:   s.EndOccurrence,
-		EndingMode:      s.EndingMode,
-		IntervalVal:     s.IntervalVal,
-		Shift:           s.Shift,
-		IsRegular:       s.IsRegular,
-		SchedulerType:   s.SchedulerType,
-		EventID:         s.EventID,
-	}
 }

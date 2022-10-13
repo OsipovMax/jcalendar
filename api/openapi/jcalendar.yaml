@@ -206,7 +206,13 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              type: integer
+        - name: win_size
+          in: query
+          description: free windows size
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: OK
