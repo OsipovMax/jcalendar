@@ -19,10 +19,5 @@ func NewGetUserByEmailQueryHandler(getter Getter) GetUserByEmailQueryHandler {
 }
 
 func (ch *GetUserByEmailQueryHandler) Handle(ctx context.Context, query *GetUserByEmailQuery) (*euser.User, error) {
-	e, err := ch.getter.GetUserByEmail(ctx, query.UserEmail)
-	if err != nil {
-		return nil, err
-	}
-
-	return e, nil
+	return ch.getter.GetUserByEmail(ctx, query.UserEmail)
 }

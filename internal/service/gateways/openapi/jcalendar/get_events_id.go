@@ -17,24 +17,40 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 	iid, err := strconv.Atoi(id)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t convert string id param for getting events: %v", err)
-		return err
+		return echo.ErrBadRequest
 	}
 
 	query, err := qrevent.NewGetEventQuery(ctx, uint(iid))
 	if err != nil {
-		logrus.WithContext(ctx).Errorf("can`t create query for getting events: %v", err)
-		return err
+		logrus.WithContext(ctx).Errorf("can`t create GetEventQuery: %v", err)
+		return echo.ErrBadRequest
 	}
 
 	e, err := s.application.Queries.GetEvent.Handle(ctx, query)
 	if err != nil {
-		logrus.WithContext(ctx).Errorf("can`t execute query for getting events: %v", err)
-		return err
+		logrus.WithContext(ctx).Errorf("can`t execute GetEventQuery: %v", err)
+		if e == nil {
+			return echo.ErrInternalServerError
+		}
+		return echo.ErrNotFound
 	}
 
 	var details = e.Details
 	if !isResourceOwner(ctx, e.CreatorID, c.Get("userID").(uint)) {
 		details = busyEventDetail
+	}
+
+	participants := make([]jcalendarsrv.OutputUser, len(e.Users), len(e.Users))
+	for idx, participant := range e.Users {
+		participants[idx] = jcalendarsrv.OutputUser{
+			ID:             pcaster(int(participant.ID)),
+			CreateAt:       pcaster(participant.CreatedAt.String()),
+			UpdateAt:       pcaster(participant.UpdatedAt.String()),
+			FirstName:      &participant.FirstName,
+			LastName:       &participant.LastName,
+			Email:          &participant.Email,
+			TimeZoneOffset: &participant.TimeZoneOffset,
+		}
 	}
 
 	return c.JSON(
@@ -56,7 +72,9 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 					Email:          &e.User.Email,
 					TimeZoneOffset: &e.User.TimeZoneOffset,
 				},
-				IsPrivate: &e.IsPrivate,
+				Participants: &participants,
+				IsPrivate:    &e.IsPrivate,
+				IsRepeat:     &e.IsRepeat,
 			},
 		},
 	)

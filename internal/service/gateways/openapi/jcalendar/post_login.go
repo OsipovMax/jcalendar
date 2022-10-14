@@ -2,29 +2,18 @@ package jcalendar
 
 import (
 	"net/http"
-	"time"
 
 	qruser "jcalendar/internal/service/usecase/queries/user"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 const (
 	usernameKey = "username"
 	passwordKey = "password"
-
-	tokenLifetime = 10 * time.Minute
 )
-
-// jwtCustomClaims are custom claims extending default ones.
-// See https://github.com/golang-jwt/jwt for more examples
-type jwtCustomClaims struct {
-	userID    uint
-	userEmail string
-	jwt.StandardClaims
-}
 
 func (s *Server) PostLogin(c echo.Context) error {
 	var (
@@ -35,21 +24,28 @@ func (s *Server) PostLogin(c echo.Context) error {
 
 	query, err := qruser.NewUserByEmailQuery(username)
 	if err != nil {
-		return echo.NewHTTPError(500)
+		logrus.WithContext(ctx).Errorf("can`t create UserByEmail query: %v", err)
+		return echo.ErrBadRequest
 	}
 
 	u, err := s.application.Queries.GetUserByEmail.Handle(ctx, query)
 	if err != nil {
-		return err
+		logrus.WithContext(ctx).Errorf("can`t execute UserByEmail query: %v", err)
+		if u == nil {
+			return echo.ErrInternalServerError
+		}
+
+		return echo.ErrNotFound
 	}
 
-	if u == nil || !isPasswordValid(u.HashedPassword, password) {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Please provide valid credentials")
+	if !isPasswordValid(u.HashedPassword, password) {
+		return echo.ErrUnauthorized
 	}
 
 	st, err := generateJWT(ctx, u.ID, username)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Please retry later")
+		logrus.WithContext(ctx).Errorf("can`t generate new JWT token: %v", err)
+		return echo.ErrInternalServerError
 	}
 
 	return c.JSON(http.StatusOK, jcalendarsrv.TokenResponse{Data: &jcalendarsrv.TokenPayload{Token: &st}})

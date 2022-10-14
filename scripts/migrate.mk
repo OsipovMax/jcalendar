@@ -1,9 +1,16 @@
 MIGRATE_DRV=postgres
-POSTGRES_HOST?=0.0.0.0
-MIGRATE_DSN?=${PG_DSN}
-MIGRATE_DSN?=host=${POSTGRES_HOST} user=postgres password=sbermarket_paas dbname=paas_db port=5432 sslmode=disable
+POSTGRES_HOST=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=service_db
+POSTGRES_PORT=5432
+MIGRATE_DSN=host=${POSTGRES_HOST} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} port=${POSTGRES_PORT} sslmode=disable TimeZone=Europe/Moscow
 MIGRATE_DIR=./migrations/migrate
 GOOSE_BASE_CMD=${GOBIN}/goose -dir ${MIGRATE_DIR} ${MIGRATE_DRV} "${MIGRATE_DSN}"
 
-migration-up:		## Migrate the DB to the most recent version available
+install:
+	go install github.com/pressly/goose/v3/cmd/goose@latest
+
+
+migration-up: install
 	${GOOSE_BASE_CMD} up

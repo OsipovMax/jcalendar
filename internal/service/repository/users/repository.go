@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	euser "jcalendar/internal/service/entity/user"
@@ -29,27 +30,28 @@ func (r *Repository) CreateUser(ctx context.Context, u *euser.User) error {
 }
 
 func (r *Repository) GetUserByID(ctx context.Context, id uint) (*euser.User, error) {
-	u := euser.User{}
+	u := &euser.User{}
 
-	err := r.db.WithContext(ctx).First(&u, id).Error
-	if err != nil {
+	err := r.db.WithContext(ctx).First(u, id).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("invalid getting user by id: %w", err)
 	}
 
-	return &u, nil
+	return u, err
 }
 
 func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*euser.User, error) {
-	u := euser.User{}
+	u := &euser.User{}
 
 	err := r.db.
 		WithContext(ctx).
 		Where("email = ?", email).
-		First(&u).
+		First(u).
 		Error
-	if err != nil {
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("invalid getting user by email: %w", err)
 	}
 
-	return &u, nil
+	return u, err
 }

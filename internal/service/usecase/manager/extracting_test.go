@@ -162,8 +162,7 @@ func TestExtendWithScheduledEvents(t *testing.T) {
 
 	for _, row := range table {
 		t.Run(row.TestSubTittle, func(t *testing.T) {
-			actualEvs, err := e.extendWithScheduledEvents(ctx, row.Events, row.From, row.Till)
-			require.NoError(t, err)
+			actualEvs := e.extendWithScheduledEvents(ctx, row.Events, row.From, row.Till)
 
 			require.Equal(t, len(row.ExpectedEvents), len(actualEvs))
 			for idx := range actualEvs {

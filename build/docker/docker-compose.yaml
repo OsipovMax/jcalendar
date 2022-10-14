@@ -8,7 +8,9 @@ services:
       dockerfile: ./build/docker/Dockerfile
       args:
         - APP_PATH=${APP_PATH}
-    command: make run
+    command: > 
+      bash -c "make migration-up
+      && make run"
     depends_on:
 #      - redis
 #      - kafka

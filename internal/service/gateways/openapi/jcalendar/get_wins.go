@@ -1,10 +1,11 @@
 package jcalendar
 
 import (
-	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
@@ -14,16 +15,16 @@ func (s *Server) GetWindows(c echo.Context, params jcalendarsrv.GetWindowsParams
 
 	from, till, err := s.application.EventManager.GetClosestFreeWindow(ctx, params.UserIds, params.WinSize)
 	if err != nil {
-		fmt.Println(err.Error())
-		return err
+		logrus.WithContext(ctx).Errorf("can`t get closest free window form event manager: %v", err)
+		return echo.ErrInternalServerError
 	}
 
 	return c.JSON(
 		http.StatusOK,
 		jcalendarsrv.FreeWindowResponse{
 			Data: &jcalendarsrv.FreeWindow{
-				From: pcaster(from.String()),
-				Till: pcaster(till.String()),
+				From: pcaster(from.Format(time.RFC3339)),
+				Till: pcaster(till.Format(time.RFC3339)),
 			},
 		},
 	)

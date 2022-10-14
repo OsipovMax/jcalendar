@@ -26,18 +26,18 @@ func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, fro
 
 	q, err := qrevent.NewGetEventsInIntervalQuery(ctx, userID, ft, tt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid get events in interval query command: %w", err)
 	}
 
 	evs, err := e.EventsInIntervalQueryHandler.Handle(ctx, q)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid execute get events in interval query command: %w", err)
 	}
 
-	return e.extendWithScheduledEvents(ctx, evs, ft, tt)
+	return e.extendWithScheduledEvents(ctx, evs, ft, tt), nil
 }
 
-func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eevent.Event, ft, tt time.Time) ([]*eevent.Event, error) {
+func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eevent.Event, ft, tt time.Time) []*eevent.Event {
 	fullEventsList := make([]*eevent.Event, 0)
 	for _, ev := range evs {
 		if !ev.IsRepeat && (ev.From.Equal(ft) || ev.From.After(ft)) && ev.Till.Before(tt) {
@@ -52,7 +52,6 @@ func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eeven
 			)
 
 			if (timestamp.Equal(ft) || timestamp.After(ft)) && timestamp.Before(tt) {
-				fmt.Println("!!!!!!!")
 				fullEventsList = append(fullEventsList, ev)
 			}
 
@@ -73,7 +72,7 @@ func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eeven
 				case yearlyShiftKey:
 					timestamp = timestamp.AddDate(1*sch.IntervalVal, 0, 0)
 				}
-				fmt.Println(timestamp)
+
 				if timestamp.Before(tt) && timestamp.Add(eventDuration).Before(tt) {
 					eventCopy := copyEvent(ev)
 					eventCopy.From = timestamp
@@ -84,5 +83,5 @@ func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eeven
 		}
 	}
 
-	return fullEventsList, nil
+	return fullEventsList
 }

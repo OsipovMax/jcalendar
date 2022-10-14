@@ -1,2 +1,2 @@
-test: ## Run tests
+test:
 	go test -cover ./...

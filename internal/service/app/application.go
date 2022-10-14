@@ -30,7 +30,7 @@ type Application struct {
 	EventManager *manager.EventManager
 }
 
-func NewApplication(ctx context.Context) (*Application, error) {
+func NewApplication(ctx context.Context, db *gorm.DB) (*Application, error) {
 	db, err := NewDB(ctx)
 	if err != nil {
 		return nil, err

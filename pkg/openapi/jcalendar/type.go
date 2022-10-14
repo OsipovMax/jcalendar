@@ -112,6 +112,11 @@ type TokenResponse struct {
 	Data *TokenPayload `json:"Data,omitempty"`
 }
 
+// UpdatedInvite defines model for UpdatedInvite.
+type UpdatedInvite struct {
+	ID *int `json:"ID,omitempty"`
+}
+
 // UserRequest defines model for UserRequest.
 type UserRequest struct {
 	Data *InputUser `json:"Data,omitempty"`

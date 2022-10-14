@@ -2,6 +2,7 @@ package events
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -65,11 +66,12 @@ func (r *Repository) CreateEvent(ctx context.Context, e *eevent.Event) (uint, er
 func (r *Repository) GetEventByID(ctx context.Context, id uint) (*eevent.Event, error) {
 	e := &eevent.Event{}
 	err := r.db.WithContext(ctx).
+		Preload(CreatorAssociations).
 		Preload(ParticipantsAssociations).
 		First(e, id).
 		Error
 
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("invalid getting event by id: %w", err)
 	}
 
@@ -88,9 +90,13 @@ func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from,
 		Find(&es).
 		Error
 
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return nil, fmt.Errorf("invalid getting events in interval by id: %w", err)
 	}
 
-	return es, err
+	if len(es) == 0 {
+		return es, errors.New("records not fouds")
+	}
+
+	return es, nil
 }

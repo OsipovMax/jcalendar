@@ -3,16 +3,22 @@ package manager
 import (
 	"container/heap"
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	eevent "jcalendar/internal/service/entity/event"
 )
 
 func (e *EventManager) GetClosestFreeWindow(ctx context.Context, userIDs []int, winSize string) (time.Time, time.Time, error) {
+	if len(userIDs) == 0 {
+		return time.Time{}, time.Time{}, errors.New("invalid list of users")
+	}
+
 	now := time.Now().UTC()
 	winDuration, err := time.ParseDuration(winSize)
 	if err != nil {
-		return time.Time{}, time.Time{}, err
+		return time.Time{}, time.Time{}, fmt.Errorf("invalid window duration: %w", err)
 	}
 
 	intervals := make([]*Interval, 0)
@@ -20,7 +26,7 @@ func (e *EventManager) GetClosestFreeWindow(ctx context.Context, userIDs []int, 
 		var evs []*eevent.Event
 		evs, err = e.GetEventsInInterval(ctx, uint(userID), now.Format(time.RFC3339), now.AddDate(1, 0, 0).Format(time.RFC3339))
 		if err != nil {
-			return time.Time{}, time.Time{}, err
+			return time.Time{}, time.Time{}, err //TODO validate mb user is not exist
 		}
 
 		for _, ev := range evs {

@@ -7,6 +7,7 @@ import (
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcalendarsrv.GetUsersUserIdEventsParams) error {
@@ -14,12 +15,17 @@ func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcal
 
 	iid, err := strconv.Atoi(userId)
 	if err != nil {
-		return err
+		logrus.WithContext(ctx).Errorf("can`t convert string userID param for getting events in interval: %v", err)
+		return echo.ErrBadRequest
 	}
 
 	es, err := s.application.EventManager.GetEventsInInterval(ctx, uint(iid), params.From, params.Till)
 	if err != nil {
-		return err
+		logrus.WithContext(ctx).Errorf("can`t get events in interval from event manager: %v", err)
+		if len(es) == 0 {
+			return echo.ErrInternalServerError
+		}
+		return echo.ErrNotFound
 	}
 
 	outputEvents := make([]jcalendarsrv.OutputEvent, len(es), len(es))

@@ -179,7 +179,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatedEvent'
+                $ref: '#/components/schemas/UpdatedInvite'
         "422":
           description: Unprocessable Entity
           content:
@@ -407,6 +407,11 @@ components:
         ID:
           type: integer
     CreatedEvent:
+      type: object
+      properties:
+        ID:
+          type: integer
+    UpdatedInvite:
       type: object
       properties:
         ID:

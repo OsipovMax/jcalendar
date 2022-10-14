@@ -2,6 +2,7 @@ package invites
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	einvite "jcalendar/internal/service/entity/invite"
@@ -38,7 +39,7 @@ func (r *Repository) GetInviteByID(ctx context.Context, id uint) (*einvite.Invit
 	i := &einvite.Invite{}
 	err := r.db.WithContext(ctx).First(i, id).Error
 
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("invalid getting invite by id: %w", err)
 	}
 
@@ -48,7 +49,8 @@ func (r *Repository) GetInviteByID(ctx context.Context, id uint) (*einvite.Invit
 func (r *Repository) UpdateInviteStatusByID(ctx context.Context, id uint, isAccepted bool) error {
 	err := r.db.WithContext(ctx).
 		Model(&einvite.Invite{ID: id}).
-		Update("is_accepted", isAccepted).Error
+		Update("is_accepted", isAccepted).
+		Error
 
 	if err != nil {
 		return fmt.Errorf("invalid updating invite status: %w", err)

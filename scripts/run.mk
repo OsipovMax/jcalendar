@@ -1,6 +1,6 @@
 all: run
 
-run: ## Run application
+run:
 run:
 	go run ./cmd/${APP_NAME}
 

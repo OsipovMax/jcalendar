@@ -32,14 +32,6 @@ func calcHash(pass string) string {
 }
 
 func generateJWT(_ context.Context, uID uint, username string) (string, error) {
-	//claims := &jwtCustomClaims{
-	//	uID,
-	//	username,
-	//	jwt.StandardClaims{
-	//		ExpiresAt: time.Now().Add(tokenLifetime).Unix(),
-	//	},
-	//}
-
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{

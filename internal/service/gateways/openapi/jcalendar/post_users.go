@@ -7,13 +7,13 @@ import (
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 func (s *Server) PostUsers(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	req := &jcalendarsrv.UserRequest{}
-
 	if err := c.Bind(req); err != nil {
 		return err
 	}
@@ -27,12 +27,14 @@ func (s *Server) PostUsers(c echo.Context) error {
 		*req.Data.TimeZoneOffset,
 	)
 	if err != nil {
-		return err
+		logrus.WithContext(ctx).Errorf("can`t create CreateUser command: %v", err)
+		return echo.ErrBadRequest
 	}
 
 	uID, err := s.application.Commands.CreateUser.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		logrus.WithContext(ctx).Errorf("can`t execute CreateUser command: %v", err)
+		return echo.ErrInternalServerError
 	}
 
 	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedUser{ID: pcaster(int(uID))})
