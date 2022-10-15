@@ -69,7 +69,12 @@ func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from,
 	err := r.db.WithContext(ctx).
 		Joins("LEFT JOIN event_schedules ON events.id = event_schedules.event_id").
 		Joins("LEFT JOIN invites ON events.id = invites.event_id").
-		Where("events.from < ? AND (event_schedules.event_id IS NOT NULL OR (events.from >= ?))", till, from).
+		Where(`(event_schedules.event_id IS NULL AND events.from >= ? AND events.from < ?) 
+					OR (event_schedules.event_id IS NOT NULL 
+						AND event_schedules.begin_occurrence >= ? 
+						AND event_schedules.begin_occurrence < ?
+					)`, from, till, from, till,
+		).
 		Where("events.creator_id = ? OR (invites.user_id = ? AND invites.is_accepted IS TRUE)", userID, userID).
 		Preload(CreatorAssociations).
 		Preload(EventSchedulesAssociations).

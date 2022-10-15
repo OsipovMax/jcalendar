@@ -93,6 +93,7 @@ func TestGetEventsId(t *testing.T) {
 						[]uint{2},
 						eventDetails,
 						nil,
+						nil,
 						[]*euser.User{{ID: 2}},
 						[]*einvite.Invite{{UserID: 2, IsAccepted: false}},
 						false,
