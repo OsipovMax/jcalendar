@@ -14,7 +14,6 @@ import (
 const (
 	ParticipantsAssociations   = "Users"
 	CreatorAssociations        = "User"
-	InvitesAssociations        = "Invites"
 	EventSchedulesAssociations = "EventSchedules"
 )
 
@@ -65,15 +64,16 @@ func (r *Repository) GetEventByID(ctx context.Context, id uint) (*eevent.Event, 
 	return e, err
 }
 
-func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from, _ time.Time) ([]*eevent.Event, error) {
+func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from, till time.Time) ([]*eevent.Event, error) {
 	es := make([]*eevent.Event, 0)
 	err := r.db.WithContext(ctx).
 		Joins("LEFT JOIN event_schedules ON events.id = event_schedules.event_id").
 		Joins("LEFT JOIN invites ON events.id = invites.event_id").
-		//Where("event_schedules.event_id IS NULL OR (event_schedules.begin_occurrence >= ?)", from).
+		Where("events.from < ? AND (event_schedules.event_id IS NOT NULL OR (events.from >= ?))", till, from).
 		Where("events.creator_id = ? OR (invites.user_id = ? AND invites.is_accepted IS TRUE)", userID, userID).
 		Preload(CreatorAssociations).
 		Preload(EventSchedulesAssociations).
+		Preload(ParticipantsAssociations).
 		Find(&es).
 		Error
 

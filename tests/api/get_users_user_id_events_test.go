@@ -39,28 +39,28 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 		expectedStatusCode int
 		expectedEventsLen  int
 	}{
-		{
-			testSubTittle:      "invalid user id format",
-			userID:             "abc",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.Format(time.RFC3339),
-			expectedStatusCode: http.StatusBadRequest,
-			expectedEventsLen:  0,
-		},
-		{
-			testSubTittle:      "invalid user id value",
-			userID:             "0",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.Format(time.RFC3339),
-			expectedStatusCode: http.StatusInternalServerError,
-		},
-		{
-			testSubTittle:      "not existing user",
-			userID:             "5",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.Format(time.RFC3339),
-			expectedStatusCode: http.StatusInternalServerError,
-		},
+		//{
+		//	testSubTittle:      "invalid user id format",
+		//	userID:             "abc",
+		//	from:               eventFromTimestamp.Format(time.RFC3339),
+		//	till:               eventTillTimestamp.Format(time.RFC3339),
+		//	expectedStatusCode: http.StatusBadRequest,
+		//	expectedEventsLen:  0,
+		//},
+		//{
+		//	testSubTittle:      "invalid user id value",
+		//	userID:             "0",
+		//	from:               eventFromTimestamp.Format(time.RFC3339),
+		//	till:               eventTillTimestamp.Format(time.RFC3339),
+		//	expectedStatusCode: http.StatusInternalServerError,
+		//},
+		//{
+		//	testSubTittle:      "not existing user",
+		//	userID:             "5",
+		//	from:               eventFromTimestamp.Format(time.RFC3339),
+		//	till:               eventTillTimestamp.Format(time.RFC3339),
+		//	expectedStatusCode: http.StatusInternalServerError,
+		//},
 		{
 			testSubTittle:      "successfully getting all events in interval",
 			userID:             "1",
@@ -69,14 +69,14 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			expectedStatusCode: http.StatusOK,
 			expectedEventsLen:  2,
 		},
-		{
-			testSubTittle:      "successfully getting single events in interval",
-			userID:             "1",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.AddDate(0, 0, 1).Format(time.RFC3339),
-			expectedStatusCode: http.StatusOK,
-			expectedEventsLen:  1,
-		},
+		//{
+		//	testSubTittle:      "successfully getting single events in interval",
+		//	userID:             "1",
+		//	from:               eventFromTimestamp.Format(time.RFC3339),
+		//	till:               eventTillTimestamp.AddDate(0, 0, 1).Format(time.RFC3339),
+		//	expectedStatusCode: http.StatusOK,
+		//	expectedEventsLen:  1,
+		//},
 	}
 
 	db, err := pkg.NewDB(ctx)
@@ -174,9 +174,9 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 				require.True(t, errors.As(err, &actualErr))
 				require.Equal(t, row.expectedStatusCode, actualErr.Code)
 			} else {
-				actual := jcalendarsrv.EventsResponse{}
-				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
-				require.Equal(t, row.expectedEventsLen, len(*actual.Data))
+				actualEvents := jcalendarsrv.EventsResponse{}
+				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actualEvents))
+				require.Equal(t, row.expectedEventsLen, len(*actualEvents.Data))
 			}
 		})
 	}

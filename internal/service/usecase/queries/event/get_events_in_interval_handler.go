@@ -20,7 +20,7 @@ func NewGetEventsInIntervalQueryHandler(getter IntervalGetter) *GetEventsInInter
 }
 
 func (ch *GetEventsInIntervalQueryHandler) Handle(ctx context.Context, query *GetEventsInIntervalQuery) ([]*eevent.Event, error) {
-	es, err := ch.getter.GetEventsInInterval(ctx, query.UserID, query.Till, query.From)
+	es, err := ch.getter.GetEventsInInterval(ctx, query.UserID, query.From, query.Till)
 	if err != nil {
 		return nil, err
 	}

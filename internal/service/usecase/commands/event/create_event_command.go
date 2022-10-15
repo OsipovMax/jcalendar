@@ -5,15 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
-	euser "jcalendar/internal/service/entity/user"
 )
 
 type CreateEventCommand struct {
 	From            time.Time
 	Till            time.Time
 	CreatorID       uint
-	Creator         *euser.User
 	ParticipantsIDs []uint
 	Details         string
 	ScheduleRule    string
