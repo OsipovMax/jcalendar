@@ -93,31 +93,39 @@ func TestGetWindows(t *testing.T) {
 
 			ft := time.Now()
 			tt := ft.Add(30 * time.Minute)
-			_, err = erepo.CreateEvent(ctx,
-				eevent.NewEvent(
-					ctx,
-					ft,
-					tt,
-					1,
-					[]uint{},
-					eventDetails,
-					nil,
-					false,
-					false,
+			require.NoError(t,
+				erepo.CreateEvent(ctx,
+					eevent.NewEvent(
+						ctx,
+						ft,
+						tt,
+						1,
+						[]uint{},
+						eventDetails,
+						nil,
+						nil,
+						nil,
+						false,
+						false,
+					),
 				),
 			)
 
-			_, err = erepo.CreateEvent(ctx,
-				eevent.NewEvent(
-					ctx,
-					ft.Add(time.Hour),
-					tt.Add(time.Hour),
-					2,
-					[]uint{},
-					eventDetails,
-					nil,
-					false,
-					false,
+			require.NoError(t,
+				erepo.CreateEvent(ctx,
+					eevent.NewEvent(
+						ctx,
+						ft.Add(time.Hour),
+						tt.Add(time.Hour),
+						2,
+						[]uint{},
+						eventDetails,
+						nil,
+						nil,
+						nil,
+						false,
+						false,
+					),
 				),
 			)
 

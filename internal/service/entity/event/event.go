@@ -34,6 +34,8 @@ func NewEvent(
 	participantsIDs []uint,
 	details string,
 	eventSchedule []*schedule.EventSchedule,
+	users []*user.User,
+	invites []*invite.Invite,
 	isPrivate, isRepeat bool,
 ) *Event {
 	return &Event{
@@ -43,6 +45,8 @@ func NewEvent(
 		ParticipantsIDs: participantsIDs,
 		Details:         details,
 		EventSchedules:  eventSchedule,
+		Users:           users,
+		Invites:         invites,
 		IsPrivate:       isPrivate,
 		IsRepeat:        isRepeat,
 	}

@@ -83,17 +83,21 @@ func TestPutInvitesId(t *testing.T) {
 			err = urepo.CreateUser(ctx, participant)
 			require.NoError(t, err)
 
-			_, err = erepo.CreateEvent(ctx,
-				eevent.NewEvent(
-					ctx,
-					eventFromTimestamp,
-					eventTillTimestamp,
-					1,
-					[]uint{},
-					eventDetails,
-					nil,
-					false,
-					false,
+			require.NoError(t,
+				erepo.CreateEvent(ctx,
+					eevent.NewEvent(
+						ctx,
+						eventFromTimestamp,
+						eventTillTimestamp,
+						1,
+						[]uint{},
+						eventDetails,
+						nil,
+						nil,
+						nil,
+						false,
+						false,
+					),
 				),
 			)
 

@@ -4,12 +4,14 @@ import (
 	"context"
 
 	eevent "jcalendar/internal/service/entity/event"
+	einvite "jcalendar/internal/service/entity/invite"
 	"jcalendar/internal/service/entity/schedule"
+	euser "jcalendar/internal/service/entity/user"
 	"jcalendar/internal/service/usecase/manager"
 )
 
 type Creator interface {
-	CreateEvent(ctx context.Context, e *eevent.Event) (uint, error)
+	CreateEvent(ctx context.Context, e *eevent.Event) error
 }
 
 // TODO: pass handler only
@@ -32,6 +34,13 @@ func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *Create
 		}
 	}
 
+	users := make([]*euser.User, 0, len(command.ParticipantsIDs))
+	invites := make([]*einvite.Invite, 0, len(command.ParticipantsIDs))
+	for idx := range command.ParticipantsIDs {
+		users = append(users, &euser.User{ID: command.ParticipantsIDs[idx]})
+		invites = append(invites, &einvite.Invite{UserID: command.ParticipantsIDs[idx], IsAccepted: false})
+	}
+
 	e := eevent.NewEvent(
 		ctx,
 		command.From,
@@ -40,11 +49,13 @@ func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *Create
 		command.ParticipantsIDs,
 		command.Details,
 		schedules,
+		users,
+		invites,
 		command.IsPrivate,
 		command.IsRepeat,
 	)
 
-	_, err := ch.creator.CreateEvent(ctx, e)
+	err := ch.creator.CreateEvent(ctx, e)
 	if err != nil {
 		return 0, err
 	}

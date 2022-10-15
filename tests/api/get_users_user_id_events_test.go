@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	einvite "jcalendar/internal/service/entity/invite"
+
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 
@@ -103,49 +105,59 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			err = urepo.CreateUser(ctx, otherCreator)
 			require.NoError(t, err)
 
-			_, err = erepo.CreateEvent(ctx,
-				eevent.NewEvent(
-					ctx,
-					eventFromTimestamp,
-					eventTillTimestamp,
-					1,
-					[]uint{2},
-					eventDetails,
-					nil,
-					false,
-					false,
+			require.NoError(t,
+				erepo.CreateEvent(ctx,
+					eevent.NewEvent(
+						ctx,
+						eventFromTimestamp,
+						eventTillTimestamp,
+						1,
+						[]uint{2},
+						eventDetails,
+						nil,
+						[]*euser.User{{ID: 2}},
+						[]*einvite.Invite{{UserID: 2, IsAccepted: false}},
+						false,
+						false,
+					),
 				),
 			)
 
-			_, err = erepo.CreateEvent(ctx,
-				eevent.NewEvent(
-					ctx,
-					eventFromTimestamp.AddDate(0, 0, 3),
-					eventTillTimestamp.AddDate(0, 0, 3),
-					1,
-					[]uint{2},
-					eventDetails,
-					nil,
-					false,
-					false,
+			require.NoError(t,
+				erepo.CreateEvent(ctx,
+					eevent.NewEvent(
+						ctx,
+						eventFromTimestamp.AddDate(0, 0, 3),
+						eventTillTimestamp.AddDate(0, 0, 3),
+						1,
+						[]uint{2},
+						eventDetails,
+						nil,
+						[]*euser.User{{ID: 2}},
+						[]*einvite.Invite{{UserID: 2, IsAccepted: false}},
+						false,
+						false,
+					),
 				),
 			)
-			require.NoError(t, err)
 
-			_, err = erepo.CreateEvent(ctx,
-				eevent.NewEvent(
-					ctx,
-					eventFromTimestamp.AddDate(0, 0, 3),
-					eventTillTimestamp.AddDate(0, 0, 3),
-					2,
-					[]uint{},
-					eventDetails,
-					nil,
-					false,
-					false,
+			require.NoError(t,
+				erepo.CreateEvent(ctx,
+					eevent.NewEvent(
+						ctx,
+						eventFromTimestamp.AddDate(0, 0, 3),
+						eventTillTimestamp.AddDate(0, 0, 3),
+						2,
+						[]uint{},
+						eventDetails,
+						nil,
+						nil,
+						nil,
+						false,
+						false,
+					),
 				),
 			)
-			require.NoError(t, err)
 
 			req := httptest.NewRequest(method, path, nil)
 			rec := httptest.NewRecorder()
