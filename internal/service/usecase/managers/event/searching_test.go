@@ -23,11 +23,6 @@ func TestGetClosestFreeWindow(t *testing.T) {
 		WinDuration                time.Duration
 		ExpectedFrom, ExpectedTill time.Time
 	}{
-		//{
-		//	TestSubTittle: "empty interval list",
-		//	Intervals:     nil,
-		//	WinDuration:   winDuration,
-		//},
 		{
 			TestSubTittle: "single time interval",
 			Intervals:     []*Interval{{From: from, Till: till}},
@@ -74,13 +69,6 @@ func TestGetClosestFreeWindow(t *testing.T) {
 			ExpectedFrom: till,
 			ExpectedTill: till.Add(winDuration),
 		},
-		//{
-		//	TestSubTittle: "now___F1___T1",
-		//	Intervals:     []*Interval{{From: now, Till: till}},
-		//	WinDuration:   winDuration,
-		//	ExpectedFrom:  till,
-		//	ExpectedTill:  till.Add(winDuration),
-		//},
 	}
 
 	for _, row := range table {

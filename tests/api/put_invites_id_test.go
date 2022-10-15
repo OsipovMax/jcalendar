@@ -42,8 +42,8 @@ func TestPutInvitesId(t *testing.T) {
 			testSubTittle: "invalid inviteID",
 			inviteID:      "0",
 			inviteUpdateRequest: jcalendarsrv.InviteUpdateRequest{
-				Data: &jcalendarsrv.InviteUpdate{
-					IsAccepted: pkg.Type2pointer(true),
+				Data: jcalendarsrv.InviteUpdate{
+					IsAccepted: true,
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -52,8 +52,8 @@ func TestPutInvitesId(t *testing.T) {
 			testSubTittle: "successfully updating exist invite",
 			inviteID:      "1",
 			inviteUpdateRequest: jcalendarsrv.InviteUpdateRequest{
-				Data: &jcalendarsrv.InviteUpdate{
-					IsAccepted: pkg.Type2pointer(true),
+				Data: jcalendarsrv.InviteUpdate{
+					IsAccepted: true,
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -128,7 +128,7 @@ func TestPutInvitesId(t *testing.T) {
 				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
 
 				var actualInvite *einvite.Invite
-				actualInvite, err = irepo.GetInviteByID(ctx, uint(*actual.ID))
+				actualInvite, err = irepo.GetInviteByID(ctx, uint(actual.ID))
 				require.NoError(t, err)
 
 				require.True(t, reflect.DeepEqual(

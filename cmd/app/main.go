@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/labstack/echo/v4"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 
 	"jcalendar/internal/pkg"
@@ -28,8 +29,9 @@ func main() {
 
 	e := echo.New()
 	e.Use(jcalendar.GetConfirmedUserMiddleware())
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
-	jcalendarsrv.RegisterHandlers(e, jcalendar.NewServer(application))
+	jcalendarsrv.RegisterHandlersWithBaseURL(e, jcalendar.NewServer(application), "/api")
 
 	if err = e.Start(":8080"); err != nil {
 		logrus.WithContext(ctx).Fatalf("can`t start HTTP Server: %v", err)

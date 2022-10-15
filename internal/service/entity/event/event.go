@@ -21,7 +21,7 @@ type Event struct {
 	Users           []*user.User              `json:"users" gorm:"many2many:events_users"`
 	Invites         []*invite.Invite          `json:"invites"`
 	Details         string                    `json:"details"`
-	ScheduleRule    string                    `json:"schedule_rule"`
+	ScheduleRule    *string                   `json:"schedule_rule"`
 	EventSchedules  []*schedule.EventSchedule `json:"-"`
 	IsPrivate       bool                      `json:"is_private"`
 	IsRepeat        bool                      `json:"is_repeat"`
@@ -33,6 +33,7 @@ func NewEvent(
 	creatorID uint,
 	participantsIDs []uint,
 	details string,
+	scheduleRule *string,
 	eventSchedule []*schedule.EventSchedule,
 	users []*user.User,
 	invites []*invite.Invite,
@@ -45,6 +46,7 @@ func NewEvent(
 		ParticipantsIDs: participantsIDs,
 		Details:         details,
 		EventSchedules:  eventSchedule,
+		ScheduleRule:    scheduleRule,
 		Users:           users,
 		Invites:         invites,
 		IsPrivate:       isPrivate,

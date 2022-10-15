@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
-	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/usecase/commands/event"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
@@ -22,14 +21,14 @@ func (s *Server) PostEvents(c echo.Context) error {
 
 	cmd, err := event.NewCreateEventCommand(
 		ctx,
-		*req.Data.From,
-		*req.Data.Till,
-		uint(*req.Data.CreatorID),
-		*req.Data.Participants,
-		*req.Data.ScheduleRule,
-		*req.Data.Details,
-		*req.Data.IsPrivate,
-		*req.Data.IsRepeat,
+		req.Data.From,
+		req.Data.Till,
+		uint(req.Data.CreatorID),
+		req.Data.Participants,
+		req.Data.ScheduleRule,
+		req.Data.Details,
+		req.Data.IsPrivate,
+		req.Data.IsRepeat,
 	)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t create new createEventCommand: %v", err)
@@ -42,5 +41,5 @@ func (s *Server) PostEvents(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedEvent{ID: pkg.Type2pointer(int(eID))})
+	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedEvent{ID: int(eID)})
 }

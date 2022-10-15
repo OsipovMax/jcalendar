@@ -175,7 +175,7 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			} else {
 				actualEvents := jcalendarsrv.EventsResponse{}
 				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actualEvents))
-				require.Equal(t, row.expectedEventsLen, len(*actualEvents.Data))
+				require.Equal(t, row.expectedEventsLen, len(actualEvents.Data))
 			}
 		})
 	}

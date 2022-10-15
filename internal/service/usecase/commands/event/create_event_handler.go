@@ -29,9 +29,9 @@ func NewCreateEventCommandHandler(creator Creator, handler RuleHandler) CreateEv
 
 func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *CreateEventCommand) (uint, error) {
 	var schedules []*eschedule.EventSchedule
-	if command.IsRepeat {
+	if command.IsRepeat && command.ScheduleRule != nil {
 		var err error
-		schedules, err = ch.handler.HandleRule(ctx, command.From, command.ScheduleRule)
+		schedules, err = ch.handler.HandleRule(ctx, command.From, *command.ScheduleRule)
 		if err != nil {
 			return 0, err
 		}
@@ -51,6 +51,7 @@ func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *Create
 		command.CreatorID,
 		command.ParticipantsIDs,
 		command.Details,
+		command.ScheduleRule,
 		schedules,
 		users,
 		invites,

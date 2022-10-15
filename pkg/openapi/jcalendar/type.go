@@ -5,121 +5,121 @@ package jcalendar
 
 // CreatedEvent defines model for CreatedEvent.
 type CreatedEvent struct {
-	ID *int `json:"ID,omitempty"`
+	ID int `json:"ID"`
 }
 
 // CreatedUser defines model for CreatedUser.
 type CreatedUser struct {
-	ID *int `json:"ID,omitempty"`
+	ID int `json:"ID"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
-	Status *int    `json:"Status,omitempty"`
-	Title  *string `json:"Title,omitempty"`
+	Status int    `json:"Status"`
+	Title  string `json:"Title"`
 }
 
 // EventRequest defines model for EventRequest.
 type EventRequest struct {
-	Data *InputEvent `json:"Data,omitempty"`
+	Data InputEvent `json:"Data"`
 }
 
 // EventResponse defines model for EventResponse.
 type EventResponse struct {
-	Data *OutputEvent `json:"Data,omitempty"`
+	Data OutputEvent `json:"Data"`
 }
 
 // EventsResponse defines model for EventsResponse.
 type EventsResponse struct {
-	Data *[]OutputEvent `json:"Data,omitempty"`
+	Data []OutputEvent `json:"Data"`
 }
 
 // FreeWindow defines model for FreeWindow.
 type FreeWindow struct {
-	From *string `json:"From,omitempty"`
-	Till *string `json:"Till,omitempty"`
+	From string `json:"From"`
+	Till string `json:"Till"`
 }
 
 // FreeWindowResponse defines model for FreeWindowResponse.
 type FreeWindowResponse struct {
-	Data *FreeWindow `json:"Data,omitempty"`
+	Data FreeWindow `json:"Data"`
 }
 
 // InputEvent defines model for InputEvent.
 type InputEvent struct {
-	CreatorID    *int    `json:"CreatorID,omitempty"`
-	Details      *string `json:"Details,omitempty"`
-	From         *string `json:"From,omitempty"`
-	IsPrivate    *bool   `json:"IsPrivate,omitempty"`
-	IsRepeat     *bool   `json:"IsRepeat,omitempty"`
+	CreatorID    int     `json:"CreatorID"`
+	Details      string  `json:"Details"`
+	From         string  `json:"From"`
+	IsPrivate    bool    `json:"IsPrivate"`
+	IsRepeat     bool    `json:"IsRepeat"`
 	Participants *[]int  `json:"Participants,omitempty"`
 	ScheduleRule *string `json:"ScheduleRule,omitempty"`
-	Till         *string `json:"Till,omitempty"`
+	Till         string  `json:"Till"`
 }
 
 // InputUser defines model for InputUser.
 type InputUser struct {
-	Email          *string `json:"Email,omitempty"`
-	FirstName      *string `json:"FirstName,omitempty"`
-	LastName       *string `json:"LastName,omitempty"`
-	Password       *string `json:"Password,omitempty"`
-	TimeZoneOffset *int    `json:"TimeZoneOffset,omitempty"`
+	Email          string `json:"Email"`
+	FirstName      string `json:"FirstName"`
+	LastName       string `json:"LastName"`
+	Password       string `json:"Password"`
+	TimeZoneOffset int    `json:"TimeZoneOffset"`
 }
 
 // InviteUpdate defines model for InviteUpdate.
 type InviteUpdate struct {
-	IsAccepted *bool `json:"IsAccepted,omitempty"`
+	IsAccepted bool `json:"IsAccepted"`
 }
 
 // InviteUpdateRequest defines model for InviteUpdateRequest.
 type InviteUpdateRequest struct {
-	Data *InviteUpdate `json:"Data,omitempty"`
+	Data InviteUpdate `json:"Data"`
 }
 
 // OutputEvent defines model for OutputEvent.
 type OutputEvent struct {
-	CreatedAt    *string       `json:"CreatedAt,omitempty"`
-	Creator      *OutputUser   `json:"Creator,omitempty"`
-	Details      *string       `json:"Details,omitempty"`
-	From         *string       `json:"From,omitempty"`
-	ID           *int          `json:"ID,omitempty"`
-	IsPrivate    *bool         `json:"IsPrivate,omitempty"`
-	IsRepeat     *bool         `json:"IsRepeat,omitempty"`
+	CreatedAt    string        `json:"CreatedAt"`
+	Creator      OutputUser    `json:"Creator"`
+	Details      string        `json:"Details"`
+	From         string        `json:"From"`
+	ID           int           `json:"ID"`
+	IsPrivate    bool          `json:"IsPrivate"`
+	IsRepeat     bool          `json:"IsRepeat"`
 	Participants *[]OutputUser `json:"Participants,omitempty"`
 	ScheduleRule *string       `json:"ScheduleRule,omitempty"`
-	Till         *string       `json:"Till,omitempty"`
-	UpdatedAt    *string       `json:"UpdatedAt,omitempty"`
+	Till         string        `json:"Till"`
+	UpdatedAt    string        `json:"UpdatedAt"`
 }
 
 // OutputUser defines model for OutputUser.
 type OutputUser struct {
-	CreatedAt      *string `json:"CreatedAt,omitempty"`
-	Email          *string `json:"Email,omitempty"`
-	FirstName      *string `json:"FirstName,omitempty"`
-	ID             *int    `json:"ID,omitempty"`
-	LastName       *string `json:"LastName,omitempty"`
-	TimeZoneOffset *int    `json:"TimeZoneOffset,omitempty"`
-	UpdatedAt      *string `json:"UpdatedAt,omitempty"`
+	CreatedAt      string `json:"CreatedAt"`
+	Email          string `json:"Email"`
+	FirstName      string `json:"FirstName"`
+	ID             int    `json:"ID"`
+	LastName       string `json:"LastName"`
+	TimeZoneOffset int    `json:"TimeZoneOffset"`
+	UpdatedAt      string `json:"UpdatedAt"`
 }
 
 // TokenPayload defines model for TokenPayload.
 type TokenPayload struct {
-	Token *string `json:"Token,omitempty"`
+	Token string `json:"Token"`
 }
 
 // TokenResponse defines model for TokenResponse.
 type TokenResponse struct {
-	Data *TokenPayload `json:"Data,omitempty"`
+	Data TokenPayload `json:"Data"`
 }
 
 // UpdatedInvite defines model for UpdatedInvite.
 type UpdatedInvite struct {
-	ID *int `json:"ID,omitempty"`
+	ID int `json:"ID"`
 }
 
 // UserRequest defines model for UserRequest.
 type UserRequest struct {
-	Data *InputUser `json:"Data,omitempty"`
+	Data InputUser `json:"Data"`
 }
 
 // PostEventsJSONBody defines parameters for PostEvents.

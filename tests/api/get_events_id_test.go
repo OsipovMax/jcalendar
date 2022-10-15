@@ -119,7 +119,7 @@ func TestGetEventsId(t *testing.T) {
 
 				expectedEvent := getEventJSON(creator, participant)
 
-				expectedEvent.Data.ID = pkg.Type2pointer(1)
+				expectedEvent.Data.ID = 1
 				expectedEvent.Data.CreatedAt = actualEvent.Data.CreatedAt
 				expectedEvent.Data.UpdatedAt = actualEvent.Data.UpdatedAt
 

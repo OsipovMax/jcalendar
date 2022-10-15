@@ -34,10 +34,6 @@ func NewCreateUserCommand(
 		return nil, errors.New("missing password value")
 	}
 
-	if timeZoneOffset < 0 {
-		return nil, errors.New("negative timeZoneOffset value")
-	}
-
 	return &CreateUserCommand{
 		FirstName:      firstName,
 		LastName:       lastName,

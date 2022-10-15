@@ -37,12 +37,6 @@ func TestGetWindows(t *testing.T) {
 		expectedStatusCode         int
 		expectedFrom, expectedTill string
 	}{
-		//{
-		//	testSubTittle:      "invalid user ids list param",
-		//	userIDs:            []int{},
-		//	winSize:            "15m",
-		//	expectedStatusCode: http.StatusInternalServerError,
-		//},
 		{
 			testSubTittle:      "invalid win size param",
 			userIDs:            []int{1, 2},
@@ -148,8 +142,8 @@ func TestGetWindows(t *testing.T) {
 			} else {
 				actual := jcalendarsrv.FreeWindowResponse{}
 				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
-				require.Equal(t, tt.Format(time.RFC3339), *actual.Data.From)
-				require.Equal(t, tt.Add(15*time.Minute).Format(time.RFC3339), *actual.Data.Till)
+				require.Equal(t, tt.Format(time.RFC3339), actual.Data.From)
+				require.Equal(t, tt.Add(15*time.Minute).Format(time.RFC3339), actual.Data.Till)
 			}
 		})
 	}

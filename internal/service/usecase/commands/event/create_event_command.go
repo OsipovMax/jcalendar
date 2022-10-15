@@ -13,7 +13,7 @@ type CreateEventCommand struct {
 	CreatorID       uint
 	ParticipantsIDs []uint
 	Details         string
-	ScheduleRule    string
+	ScheduleRule    *string
 	IsPrivate       bool
 	IsRepeat        bool
 }
@@ -22,8 +22,8 @@ func NewCreateEventCommand(
 	_ context.Context,
 	from, till string,
 	creatorID uint,
-	participantsIDs []int,
-	scheduleRule string,
+	participantsIDs *[]int,
+	scheduleRule *string,
 	details string,
 	isPrivate, isRepeat bool,
 ) (*CreateEventCommand, error) {
@@ -39,9 +39,16 @@ func NewCreateEventCommand(
 		return nil, errors.New("non-positive creatorID value")
 	}
 
-	tmp := make([]uint, len(participantsIDs))
-	for idx := range participantsIDs {
-		tmp[idx] = uint(participantsIDs[idx])
+	if isRepeat != (scheduleRule != nil) {
+		return nil, errors.New("invalid isRepeat condition")
+	}
+
+	var tmp []uint
+	if participantsIDs != nil {
+		tmp = make([]uint, len(*participantsIDs))
+		for idx := range *participantsIDs {
+			tmp[idx] = uint((*participantsIDs)[idx])
+		}
 	}
 
 	ft, err := time.Parse(time.RFC3339, from)

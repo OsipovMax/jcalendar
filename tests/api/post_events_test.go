@@ -38,15 +38,13 @@ func TestPostEvents(t *testing.T) {
 		{
 			testSubTittle: "invalid request body",
 			eventRequest: jcalendarsrv.EventRequest{
-				Data: &jcalendarsrv.InputEvent{
-					From:         pkg.Type2pointer(eventFromTimestamp.Format(time.RFC3339)),
-					Till:         pkg.Type2pointer(eventTillTimestamp.Format(time.RFC3339)),
-					CreatorID:    pkg.Type2pointer(0),
-					Participants: &[]int{},
-					ScheduleRule: pkg.Type2pointer(""),
-					Details:      pkg.Type2pointer("details"),
-					IsRepeat:     pkg.Type2pointer(false),
-					IsPrivate:    pkg.Type2pointer(true),
+				Data: jcalendarsrv.InputEvent{
+					From:      eventFromTimestamp.Format(time.RFC3339),
+					Till:      eventTillTimestamp.Format(time.RFC3339),
+					CreatorID: 0,
+					Details:   "details",
+					IsRepeat:  false,
+					IsPrivate: true,
 				},
 			},
 			expectedStatusCode: 400,
@@ -54,15 +52,13 @@ func TestPostEvents(t *testing.T) {
 		{
 			testSubTittle: "successfully creating new event",
 			eventRequest: jcalendarsrv.EventRequest{
-				Data: &jcalendarsrv.InputEvent{
-					From:         pkg.Type2pointer(eventFromTimestamp.Format(time.RFC3339)),
-					Till:         pkg.Type2pointer(eventTillTimestamp.Format(time.RFC3339)),
-					CreatorID:    pkg.Type2pointer(1),
-					Participants: &[]int{},
-					ScheduleRule: pkg.Type2pointer(""),
-					Details:      pkg.Type2pointer("details"),
-					IsRepeat:     pkg.Type2pointer(false),
-					IsPrivate:    pkg.Type2pointer(true),
+				Data: jcalendarsrv.InputEvent{
+					From:      eventFromTimestamp.Format(time.RFC3339),
+					Till:      eventTillTimestamp.Format(time.RFC3339),
+					CreatorID: 1,
+					Details:   "details",
+					IsRepeat:  false,
+					IsPrivate: true,
 				},
 			},
 		},
@@ -109,15 +105,15 @@ func TestPostEvents(t *testing.T) {
 				actual := jcalendarsrv.CreatedEvent{}
 				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
 				var actualEv *eevent.Event
-				actualEv, err = erepo.GetEventByID(ctx, uint(*actual.ID))
+				actualEv, err = erepo.GetEventByID(ctx, uint(actual.ID))
 				require.NoError(t, err)
 
 				var ft time.Time
-				ft, err = time.Parse(time.RFC3339, *row.eventRequest.Data.From)
+				ft, err = time.Parse(time.RFC3339, row.eventRequest.Data.From)
 				require.NoError(t, err)
 
 				var tt time.Time
-				tt, err = time.Parse(time.RFC3339, *row.eventRequest.Data.Till)
+				tt, err = time.Parse(time.RFC3339, row.eventRequest.Data.Till)
 				require.NoError(t, err)
 
 				actualEv.User.HashedPassword = ""
@@ -128,7 +124,7 @@ func TestPostEvents(t *testing.T) {
 						UpdatedAt: actualEv.UpdatedAt,
 						From:      ft,
 						Till:      tt,
-						CreatorID: uint(*row.eventRequest.Data.CreatorID),
+						CreatorID: uint(row.eventRequest.Data.CreatorID),
 						User: &euser.User{
 							ID:             actualEv.User.ID,
 							CreatedAt:      actualEv.User.CreatedAt,
@@ -139,9 +135,9 @@ func TestPostEvents(t *testing.T) {
 							TimeZoneOffset: creator.TimeZoneOffset,
 						},
 						Users:     []*euser.User{},
-						Details:   *row.eventRequest.Data.Details,
-						IsRepeat:  *row.eventRequest.Data.IsRepeat,
-						IsPrivate: *row.eventRequest.Data.IsPrivate,
+						Details:   row.eventRequest.Data.Details,
+						IsRepeat:  row.eventRequest.Data.IsRepeat,
+						IsPrivate: row.eventRequest.Data.IsPrivate,
 					},
 					*actualEv,
 				))

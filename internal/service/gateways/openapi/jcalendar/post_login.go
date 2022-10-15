@@ -43,5 +43,5 @@ func (s *Server) PostLogin(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusOK, jcalendarsrv.TokenResponse{Data: &jcalendarsrv.TokenPayload{Token: &st}})
+	return c.JSON(http.StatusOK, jcalendarsrv.TokenResponse{Data: jcalendarsrv.TokenPayload{Token: st}})
 }

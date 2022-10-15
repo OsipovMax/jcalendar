@@ -12,7 +12,7 @@ CREATE TABLE events
     CONSTRAINT fk_events_users
         FOREIGN KEY (creator_id)
             REFERENCES users (id),
-    details       TEXT,
+    details       TEXT                        NOT NULL,
     schedule_rule TEXT,
     is_private    BOOLEAN                     NOT NULL,
     is_repeat     BOOLEAN                     NOT NULL

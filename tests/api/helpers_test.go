@@ -6,7 +6,6 @@ import (
 
 	"gorm.io/gorm"
 
-	"jcalendar/internal/pkg"
 	euser "jcalendar/internal/service/entity/user"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
@@ -29,8 +28,6 @@ const (
 var (
 	eventFromTimestamp = time.Date(2022, 1, 1, 12, 0, 0, 0, time.Local)
 	eventTillTimestamp = time.Date(2022, 1, 1, 12, 30, 0, 0, time.Local)
-	eventIsPrivate     = false
-	eventIsRepeat      = false
 	eventDetails       = "Details"
 
 	userFirstName      = "Ivan"
@@ -50,27 +47,27 @@ func clearTables(ctx context.Context, db *gorm.DB) error {
 func getEventJSON(c, p *euser.User) jcalendarsrv.EventResponse {
 	participants := []jcalendarsrv.OutputUser{
 		{
-			FirstName:      &p.FirstName,
-			LastName:       &p.LastName,
-			Email:          &p.Email,
-			TimeZoneOffset: &p.TimeZoneOffset,
+			FirstName:      p.FirstName,
+			LastName:       p.LastName,
+			Email:          p.Email,
+			TimeZoneOffset: p.TimeZoneOffset,
 		},
 	}
 
 	return jcalendarsrv.EventResponse{
-		Data: &jcalendarsrv.OutputEvent{
-			From:    pkg.Type2pointer(eventFromTimestamp.String()),
-			Till:    pkg.Type2pointer(eventTillTimestamp.String()),
-			Details: &eventDetails,
-			Creator: &jcalendarsrv.OutputUser{
-				FirstName:      &c.FirstName,
-				LastName:       &c.LastName,
-				Email:          &c.Email,
-				TimeZoneOffset: &c.TimeZoneOffset,
+		Data: jcalendarsrv.OutputEvent{
+			From:    eventFromTimestamp.String(),
+			Till:    eventTillTimestamp.String(),
+			Details: eventDetails,
+			Creator: jcalendarsrv.OutputUser{
+				FirstName:      c.FirstName,
+				LastName:       c.LastName,
+				Email:          c.Email,
+				TimeZoneOffset: c.TimeZoneOffset,
 			},
 			Participants: &participants,
-			IsPrivate:    &eventIsPrivate,
-			IsRepeat:     &eventIsRepeat,
+			IsPrivate:    false,
+			IsRepeat:     false,
 		},
 	}
 }

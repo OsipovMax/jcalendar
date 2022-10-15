@@ -243,21 +243,21 @@ paths:
       summary: Events information
       description: Adds events information
       tags:
-        - events
+        - user
       requestBody:
         required: true
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
+              required:
+                - username
+                - password
               properties:
-                email:
+                username:
                   type: string
                 password:
                   type: string
-              required:
-                - email
-                - password
       responses:
         "200":
           description: OK
@@ -275,11 +275,19 @@ components:
   schemas:
     UserRequest:
       type: object
+      required:
+        - Data
       properties:
         Data:
           $ref: '#/components/schemas/InputUser'
     InputUser:
       type: object
+      required:
+        - FirstName
+        - LastName
+        - Email
+        - Password
+        - TimeZoneOffset
       properties:
         FirstName:
           type: string
@@ -293,6 +301,14 @@ components:
           type: integer
     OutputUser:
       type: object
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - FirstName
+        - LastName
+        - Email
+        - TimeZoneOffset
       properties:
         ID:
           type: integer
@@ -310,16 +326,22 @@ components:
           type: integer
     EventRequest:
       type: object
+      required:
+        - Data
       properties:
         Data:
           $ref: '#/components/schemas/InputEvent'
     EventResponse:
       type: object
+      required:
+        - Data
       properties:
         Data:
           $ref: '#/components/schemas/OutputEvent'
     EventsResponse:
       type: object
+      required:
+        - Data
       properties:
         Data:
           type: array
@@ -327,6 +349,13 @@ components:
             $ref: '#/components/schemas/OutputEvent'
     InputEvent:
       type: object
+      required:
+        - From
+        - Till
+        - CreatorID
+        - Details
+        - IsPrivate
+        - IsRepeat
       properties:
         From:
           type: string
@@ -348,6 +377,16 @@ components:
           type: boolean
     OutputEvent:
       type: object
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - From
+        - Till
+        - Creator
+        - Details
+        - IsPrivate
+        - IsRepeat
       properties:
         ID:
           type: integer
@@ -375,27 +414,39 @@ components:
           type: boolean
     InviteUpdateRequest:
       type: object
+      required:
+        - Data
       properties:
         Data:
           $ref: '#/components/schemas/InviteUpdate'
     InviteUpdate:
       type: object
+      required:
+        - IsAccepted
       properties:
         IsAccepted:
           type: boolean
     ErrorResponse:
       type: object
+      required:
+        - Title
+        - Status
       properties:
         Title:
           type: string
         Status:
           type: integer
     FreeWindowResponse:
+      required:
+        - Data
       properties:
         Data:
           $ref: '#/components/schemas/FreeWindow'
     FreeWindow:
       type: object
+      required:
+        - From
+        - Till
       properties:
         From:
           type: string
@@ -403,25 +454,36 @@ components:
           type: string
     CreatedUser:
       type: object
+      required:
+        - ID
       properties:
         ID:
           type: integer
     CreatedEvent:
       type: object
+      required:
+        - ID
       properties:
         ID:
           type: integer
     UpdatedInvite:
       type: object
+      required:
+        - ID
       properties:
         ID:
           type: integer
     TokenResponse:
+      type: object
+      required:
+        - Data
       properties:
         Data:
           $ref: '#/components/schemas/TokenPayload'
     TokenPayload:
       type: object
+      required:
+        - Token
       properties:
         Token:
           type: string

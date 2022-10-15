@@ -35,12 +35,12 @@ func TestPostUsers(t *testing.T) {
 		{
 			testSubTittle: "invalid request body",
 			userRequest: jcalendarsrv.UserRequest{
-				Data: &jcalendarsrv.InputUser{
-					FirstName:      &userFirstName,
-					LastName:       &userLastName,
-					Email:          &userEmail,
-					Password:       pkg.Type2pointer("123123"),
-					TimeZoneOffset: pkg.Type2pointer(-1999),
+				Data: jcalendarsrv.InputUser{
+					FirstName:      userFirstName,
+					LastName:       userLastName,
+					Email:          userEmail,
+					Password:       "123123",
+					TimeZoneOffset: -1999,
 				},
 			},
 			expectedStatusCode: 400,
@@ -48,12 +48,12 @@ func TestPostUsers(t *testing.T) {
 		{
 			testSubTittle: "successfully creating new event",
 			userRequest: jcalendarsrv.UserRequest{
-				Data: &jcalendarsrv.InputUser{
-					FirstName:      &userFirstName,
-					LastName:       &userLastName,
-					Email:          &userEmail,
-					Password:       pkg.Type2pointer("123123"),
-					TimeZoneOffset: &userTimeZoneOffset,
+				Data: jcalendarsrv.InputUser{
+					FirstName:      userFirstName,
+					LastName:       userLastName,
+					Email:          userEmail,
+					Password:       "123123",
+					TimeZoneOffset: userTimeZoneOffset,
 				},
 			},
 		},
@@ -95,7 +95,7 @@ func TestPostUsers(t *testing.T) {
 				actual := jcalendarsrv.CreatedUser{}
 				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
 				var actualUser *euser.User
-				actualUser, err = urepo.GetUserByID(ctx, uint(*actual.ID))
+				actualUser, err = urepo.GetUserByID(ctx, uint(actual.ID))
 				require.NoError(t, err)
 
 				actualUser.HashedPassword = ""
@@ -104,10 +104,10 @@ func TestPostUsers(t *testing.T) {
 						ID:             actualUser.ID,
 						CreatedAt:      actualUser.CreatedAt,
 						UpdatedAt:      actualUser.UpdatedAt,
-						FirstName:      *row.userRequest.Data.FirstName,
-						LastName:       *row.userRequest.Data.LastName,
-						Email:          *row.userRequest.Data.Email,
-						TimeZoneOffset: *row.userRequest.Data.TimeZoneOffset,
+						FirstName:      row.userRequest.Data.FirstName,
+						LastName:       row.userRequest.Data.LastName,
+						Email:          row.userRequest.Data.Email,
+						TimeZoneOffset: row.userRequest.Data.TimeZoneOffset,
 					},
 					*actualUser,
 				))

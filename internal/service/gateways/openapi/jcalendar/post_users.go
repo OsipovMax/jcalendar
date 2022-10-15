@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
-	"jcalendar/internal/pkg"
 	cmduser "jcalendar/internal/service/usecase/commands/user"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
@@ -16,18 +15,18 @@ func (s *Server) PostUsers(c echo.Context) error {
 
 	req := &jcalendarsrv.UserRequest{}
 	if err := c.Bind(req); err != nil {
-		return err
+		logrus.WithContext(ctx).Errorf("can`t binds user request body: %v", err)
+		return echo.ErrBadRequest
 	}
 
 	cmd, err := cmduser.NewCreateUserCommand(
 		ctx,
-		*req.Data.FirstName,
-		*req.Data.LastName,
-		*req.Data.Email,
-		calcHash(*req.Data.Password),
-		*req.Data.TimeZoneOffset,
+		req.Data.FirstName,
+		req.Data.LastName,
+		req.Data.Email,
+		calcHash(req.Data.Password),
+		req.Data.TimeZoneOffset,
 	)
-
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t create CreateUser command: %v", err)
 		return echo.ErrBadRequest
@@ -39,5 +38,5 @@ func (s *Server) PostUsers(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedUser{ID: pkg.Type2pointer(int(uID))})
+	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedUser{ID: int(uID)})
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
-	"jcalendar/internal/pkg"
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
@@ -45,38 +44,39 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 	participants := make([]jcalendarsrv.OutputUser, len(e.Users))
 	for idx, participant := range e.Users {
 		participants[idx] = jcalendarsrv.OutputUser{
-			ID:             pkg.Type2pointer(int(participant.ID)),
-			CreatedAt:      pkg.Type2pointer(participant.CreatedAt.String()),
-			UpdatedAt:      pkg.Type2pointer(participant.UpdatedAt.String()),
-			FirstName:      &participant.FirstName,
-			LastName:       &participant.LastName,
-			Email:          &participant.Email,
-			TimeZoneOffset: &participant.TimeZoneOffset,
+			ID:             int(participant.ID),
+			CreatedAt:      participant.CreatedAt.String(),
+			UpdatedAt:      participant.UpdatedAt.String(),
+			FirstName:      participant.FirstName,
+			LastName:       participant.LastName,
+			Email:          participant.Email,
+			TimeZoneOffset: participant.TimeZoneOffset,
 		}
 	}
 
 	return c.JSON(
 		http.StatusOK,
 		jcalendarsrv.EventResponse{
-			Data: &jcalendarsrv.OutputEvent{
-				ID:        pkg.Type2pointer(int(e.ID)),
-				CreatedAt: pkg.Type2pointer(e.CreatedAt.String()),
-				UpdatedAt: pkg.Type2pointer(e.UpdatedAt.String()),
-				From:      pkg.Type2pointer(e.From.String()),
-				Till:      pkg.Type2pointer(e.Till.String()),
-				Details:   &details,
-				Creator: &jcalendarsrv.OutputUser{
-					ID:             pkg.Type2pointer(int(e.User.ID)),
-					CreatedAt:      pkg.Type2pointer(e.User.CreatedAt.String()),
-					UpdatedAt:      pkg.Type2pointer(e.User.UpdatedAt.String()),
-					FirstName:      &e.User.FirstName,
-					LastName:       &e.User.LastName,
-					Email:          &e.User.Email,
-					TimeZoneOffset: &e.User.TimeZoneOffset,
+			Data: jcalendarsrv.OutputEvent{
+				ID:           int(e.ID),
+				CreatedAt:    e.CreatedAt.String(),
+				UpdatedAt:    e.UpdatedAt.String(),
+				From:         e.From.String(),
+				Till:         e.Till.String(),
+				Details:      details,
+				ScheduleRule: e.ScheduleRule,
+				Creator: jcalendarsrv.OutputUser{
+					ID:             int(e.User.ID),
+					CreatedAt:      e.User.CreatedAt.String(),
+					UpdatedAt:      e.User.UpdatedAt.String(),
+					FirstName:      e.User.FirstName,
+					LastName:       e.User.LastName,
+					Email:          e.User.Email,
+					TimeZoneOffset: e.User.TimeZoneOffset,
 				},
 				Participants: &participants,
-				IsPrivate:    &e.IsPrivate,
-				IsRepeat:     &e.IsRepeat,
+				IsPrivate:    e.IsPrivate,
+				IsRepeat:     e.IsRepeat,
 			},
 		},
 	)

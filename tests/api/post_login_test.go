@@ -88,7 +88,7 @@ func TestPostLogin(t *testing.T) {
 			} else {
 				actual := jcalendarsrv.TokenResponse{}
 				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
-				require.NotEqual(t, 0, len(*actual.Data.Token))
+				require.NotEqual(t, 0, len(actual.Data.Token))
 			}
 		})
 	}

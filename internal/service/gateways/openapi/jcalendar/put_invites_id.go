@@ -46,7 +46,7 @@ func (s *Server) PutInvitesId(c echo.Context, id string) error {
 		return echo.ErrBadRequest
 	}
 
-	ucmd, err := cmdinvite.NewUpdateInviteCommand(ctx, uint(iid), *req.Data.IsAccepted)
+	ucmd, err := cmdinvite.NewUpdateInviteCommand(ctx, uint(iid), req.Data.IsAccepted)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t create UpdateInvite command: %v", err)
 		return echo.ErrBadRequest
@@ -58,5 +58,5 @@ func (s *Server) PutInvitesId(c echo.Context, id string) error {
 		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(200, jcalendarsrv.UpdatedInvite{ID: &iid})
+	return c.JSON(200, jcalendarsrv.UpdatedInvite{ID: iid})
 }
