@@ -10,21 +10,9 @@ services:
       - "9090:9090"
 
 volumes:
-  kafka-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: ${DATA_PATH}/kafka
   postgres-data:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
       device: ${DATA_PATH}/postgres
-  redis-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: ${DATA_PATH}/redis
