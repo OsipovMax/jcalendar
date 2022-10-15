@@ -2,11 +2,8 @@ package app
 
 import (
 	"context"
-	"os"
 
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/invites"
@@ -14,20 +11,17 @@ import (
 	cmdevent "jcalendar/internal/service/usecase/commands/event"
 	cmdinvite "jcalendar/internal/service/usecase/commands/invite"
 	cmduser "jcalendar/internal/service/usecase/commands/user"
-	"jcalendar/internal/service/usecase/manager"
+	mevent "jcalendar/internal/service/usecase/managers/event"
+	mrule "jcalendar/internal/service/usecase/managers/rule"
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 	qrinvite "jcalendar/internal/service/usecase/queries/invite"
 	qruser "jcalendar/internal/service/usecase/queries/user"
 )
 
-const (
-	postgresDSNKey = "POSTGRES"
-)
-
 type Application struct {
 	Commands     Commands
 	Queries      Queries
-	EventManager *manager.EventManager
+	EventManager *mevent.EventManager
 }
 
 func NewApplication(ctx context.Context, db *gorm.DB) (*Application, error) {
@@ -37,11 +31,14 @@ func NewApplication(ctx context.Context, db *gorm.DB) (*Application, error) {
 		urepo = users.NewRepository(db)
 	)
 
-	m := manager.NewEventManager(ctx, qrevent.NewGetEventsInIntervalQueryHandler(erepo))
+	var (
+		eventManager = mevent.NewEventManager(ctx, qrevent.NewGetEventsInIntervalQueryHandler(erepo))
+		ruleManager  = mrule.NewRuleManager(ctx)
+	)
 
 	app := &Application{
 		Commands: Commands{
-			CreateEvent: cmdevent.NewCreateEventCommandHandler(erepo, m),
+			CreateEvent: cmdevent.NewCreateEventCommandHandler(erepo, ruleManager),
 
 			UpdateInvite: cmdinvite.NewUpdateInviteCommandHandler(irepo),
 
@@ -56,24 +53,8 @@ func NewApplication(ctx context.Context, db *gorm.DB) (*Application, error) {
 			GetInvite: qrinvite.NewGetInviteQueryHandler(irepo),
 		},
 
-		EventManager: m,
+		EventManager: eventManager,
 	}
 
 	return app, nil
-}
-
-func NewDB(_ context.Context) (*gorm.DB, error) {
-	var (
-		dsn = os.Getenv(postgresDSNKey)
-	)
-
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }

@@ -2,33 +2,36 @@ package event
 
 import (
 	"context"
+	"time"
 
 	eevent "jcalendar/internal/service/entity/event"
 	einvite "jcalendar/internal/service/entity/invite"
-	"jcalendar/internal/service/entity/schedule"
+	eschedule "jcalendar/internal/service/entity/schedule"
 	euser "jcalendar/internal/service/entity/user"
-	"jcalendar/internal/service/usecase/manager"
 )
 
 type Creator interface {
 	CreateEvent(ctx context.Context, e *eevent.Event) error
 }
 
-// TODO: pass handler only
-type CreateEventCommandHandler struct {
-	creator      Creator
-	eventManager *manager.EventManager
+type RuleHandler interface {
+	HandleRule(ctx context.Context, eventFrom time.Time, eventScheduleRule string) ([]*eschedule.EventSchedule, error)
 }
 
-func NewCreateEventCommandHandler(creator Creator, eventManager *manager.EventManager) CreateEventCommandHandler {
-	return CreateEventCommandHandler{creator: creator, eventManager: eventManager}
+type CreateEventCommandHandler struct {
+	creator Creator
+	handler RuleHandler
+}
+
+func NewCreateEventCommandHandler(creator Creator, handler RuleHandler) CreateEventCommandHandler {
+	return CreateEventCommandHandler{creator: creator, handler: handler}
 }
 
 func (ch *CreateEventCommandHandler) Handle(ctx context.Context, command *CreateEventCommand) (uint, error) {
-	var schedules []*schedule.EventSchedule
+	var schedules []*eschedule.EventSchedule
 	if command.IsRepeat {
 		var err error
-		schedules, err = ch.eventManager.HandleRule(ctx, command.From, command.ScheduleRule)
+		schedules, err = ch.handler.HandleRule(ctx, command.From, command.ScheduleRule)
 		if err != nil {
 			return 0, err
 		}

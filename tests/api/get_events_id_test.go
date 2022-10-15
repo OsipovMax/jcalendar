@@ -4,13 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
-
-	einvite "jcalendar/internal/service/entity/invite"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
@@ -18,6 +15,7 @@ import (
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	eevent "jcalendar/internal/service/entity/event"
+	einvite "jcalendar/internal/service/entity/invite"
 	euser "jcalendar/internal/service/entity/user"
 	"jcalendar/internal/service/gateways/openapi/jcalendar"
 	"jcalendar/internal/service/repository/events"
@@ -132,10 +130,7 @@ func TestGetEventsId(t *testing.T) {
 				(*expectedEvent.Data.Participants)[0].ID = (*actualEvent.Data.Participants)[0].ID
 				(*expectedEvent.Data.Participants)[0].CreatedAt = (*actualEvent.Data.Participants)[0].CreatedAt
 				(*expectedEvent.Data.Participants)[0].UpdatedAt = (*actualEvent.Data.Participants)[0].UpdatedAt
-				for _, v := range *(actualEvent.Data.Participants) {
-					fmt.Println(*v.FirstName, *v.LastName, *v.Email)
-				}
-				require.Equal(t, expectedEvent, actualEvent)
+
 				require.True(t, reflect.DeepEqual(expectedEvent, actualEvent))
 			}
 		})

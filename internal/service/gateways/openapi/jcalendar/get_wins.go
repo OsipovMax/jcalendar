@@ -16,7 +16,7 @@ func (s *Server) GetWindows(c echo.Context, params jcalendarsrv.GetWindowsParams
 
 	from, till, err := s.application.EventManager.GetClosestFreeWindow(ctx, params.UserIds, params.WinSize)
 	if err != nil {
-		logrus.WithContext(ctx).Errorf("can`t get closest free window form event manager: %v", err)
+		logrus.WithContext(ctx).Errorf("can`t get closest free window form event: %v", err)
 		return echo.ErrInternalServerError
 	}
 

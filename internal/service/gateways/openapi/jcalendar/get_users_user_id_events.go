@@ -23,7 +23,7 @@ func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcal
 
 	es, err := s.application.EventManager.GetEventsInInterval(ctx, uint(iid), params.From, params.Till)
 	if err != nil {
-		logrus.WithContext(ctx).Errorf("can`t get events in interval from event manager: %v", err)
+		logrus.WithContext(ctx).Errorf("can`t get events in interval from event : %v", err)
 		if len(es) == 0 {
 			return echo.ErrInternalServerError
 		}

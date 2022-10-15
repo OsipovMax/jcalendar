@@ -11,7 +11,7 @@ import (
 	eschedule "jcalendar/internal/service/entity/schedule"
 )
 
-func (e *EventManager) HandleRule(
+func (e *RuleManager) HandleRule(
 	ctx context.Context,
 	eventFrom time.Time,
 	eventScheduleRule string,
@@ -26,7 +26,7 @@ func (e *EventManager) HandleRule(
 }
 
 // nolint: funlen
-func (e *EventManager) tokenize(
+func (e *RuleManager) tokenize(
 	_ context.Context,
 	eventStartedTimestamp time.Time,
 	parts []string,

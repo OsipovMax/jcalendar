@@ -9,10 +9,6 @@ import (
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 )
 
-const (
-	dataEndingMode = "DATA"
-)
-
 func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, from, till string) ([]*eevent.Event, error) {
 	ft, err := time.Parse(time.RFC3339, from)
 	if err != nil {
