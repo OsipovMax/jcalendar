@@ -30,9 +30,7 @@ var (
 	eventTillTimestamp = time.Date(2022, 1, 1, 12, 30, 0, 0, time.Local)
 	eventIsPrivate     = false
 	eventIsRepeat      = false
-
-	eventScheduleRule = "SCHEDULER_MODE=COMMON;ENDING_MODE=NONE;INTERVAL=1;IS_EACH_DAY=TRUE;SHIFT=DAILY;"
-	eventDetails      = "Details"
+	eventDetails       = "Details"
 
 	userFirstName      = "Ivan"
 	userLastName       = "Ivanov"

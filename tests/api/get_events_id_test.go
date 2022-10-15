@@ -109,46 +109,24 @@ func TestGetEventsId(t *testing.T) {
 				require.True(t, errors.As(err, &actualErr))
 				require.Equal(t, row.expectedStatusCode, actualErr.Code)
 			} else {
-				actual := jcalendarsrv.EventResponse{}
-				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actual))
+				actualEvent := jcalendarsrv.EventResponse{}
+				require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &actualEvent))
 
-				participants := []jcalendarsrv.OutputUser{
-					{
-						ID:             (*actual.Data.Participants)[0].ID,
-						CreateAt:       (*actual.Data.Participants)[0].CreateAt,
-						UpdateAt:       (*actual.Data.Participants)[0].UpdateAt,
-						FirstName:      &participant.FirstName,
-						LastName:       &participant.LastName,
-						Email:          &participant.Email,
-						TimeZoneOffset: &participant.TimeZoneOffset,
-					},
-				}
+				expectedEvent := getEventJSON(creator, participant)
 
-				require.True(t, reflect.DeepEqual(
-					jcalendarsrv.EventResponse{
-						Data: &jcalendarsrv.OutputEvent{
-							ID:       pcaster(1),
-							CreateAt: actual.Data.CreateAt,
-							UpdateAt: actual.Data.UpdateAt,
-							From:     pcaster(eventFromTimestamp.String()),
-							Till:     pcaster(eventTillTimestamp.String()),
-							Details:  &eventDetails,
-							Creator: &jcalendarsrv.OutputUser{
-								ID:             actual.Data.Creator.ID,
-								CreateAt:       actual.Data.Creator.CreateAt,
-								UpdateAt:       actual.Data.Creator.UpdateAt,
-								FirstName:      &creator.FirstName,
-								LastName:       &creator.LastName,
-								Email:          &creator.Email,
-								TimeZoneOffset: &creator.TimeZoneOffset,
-							},
-							Participants: &participants,
-							IsPrivate:    &eventIsPrivate,
-							IsRepeat:     &eventIsRepeat,
-						},
-					},
-					actual,
-				))
+				expectedEvent.Data.ID = pcaster(1)
+				expectedEvent.Data.CreateAt = actualEvent.Data.CreateAt
+				expectedEvent.Data.UpdateAt = actualEvent.Data.UpdateAt
+
+				expectedEvent.Data.Creator.ID = actualEvent.Data.Creator.ID
+				expectedEvent.Data.Creator.CreateAt = actualEvent.Data.Creator.CreateAt
+				expectedEvent.Data.Creator.UpdateAt = actualEvent.Data.Creator.UpdateAt
+
+				(*expectedEvent.Data.Participants)[0].ID = (*actualEvent.Data.Participants)[0].ID
+				(*expectedEvent.Data.Participants)[0].CreateAt = (*actualEvent.Data.Participants)[0].CreateAt
+				(*expectedEvent.Data.Participants)[0].UpdateAt = (*actualEvent.Data.Participants)[0].UpdateAt
+
+				require.True(t, reflect.DeepEqual(expectedEvent, actualEvent))
 			}
 		})
 	}
