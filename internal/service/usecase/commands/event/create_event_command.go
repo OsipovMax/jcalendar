@@ -42,7 +42,7 @@ func NewCreateEventCommand(
 		return nil, errors.New("non-positive creatorID value")
 	}
 
-	tmp := make([]uint, len(participantsIDs), len(participantsIDs))
+	tmp := make([]uint, len(participantsIDs))
 	for idx := range participantsIDs {
 		tmp[idx] = uint(participantsIDs[idx])
 	}

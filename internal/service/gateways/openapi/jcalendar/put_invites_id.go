@@ -1,18 +1,17 @@
 package jcalendar
 
 import (
-	"fmt"
 	"strconv"
-
-	cmdinvite "jcalendar/internal/service/usecase/commands/invite"
-	qrinvite "jcalendar/internal/service/usecase/queries/invite"
-
-	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+
+	cmdinvite "jcalendar/internal/service/usecase/commands/invite"
+	qrinvite "jcalendar/internal/service/usecase/queries/invite"
+	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
+// nolint:revive,stylecheck
 func (s *Server) PutInvitesId(c echo.Context, id string) error {
 	ctx := c.Request().Context()
 
@@ -46,7 +45,7 @@ func (s *Server) PutInvitesId(c echo.Context, id string) error {
 		logrus.WithContext(ctx).Errorf("can`t binds inviteUpdate request body: %v", err)
 		return echo.ErrBadRequest
 	}
-	fmt.Println("Aaa", req)
+
 	ucmd, err := cmdinvite.NewUpdateInviteCommand(ctx, uint(iid), *req.Data.IsAccepted)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t create UpdateInvite command: %v", err)

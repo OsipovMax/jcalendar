@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"gorm.io/gorm"
+
 	eevent "jcalendar/internal/service/entity/event"
 	einvite "jcalendar/internal/service/entity/invite"
 	euser "jcalendar/internal/service/entity/user"
-
-	"gorm.io/gorm"
 )
 
 const (
@@ -95,7 +95,7 @@ func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from,
 	}
 
 	if len(es) == 0 {
-		return es, errors.New("records not fouds")
+		return es, errors.New("records not found")
 	}
 
 	return es, nil

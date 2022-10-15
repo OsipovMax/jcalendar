@@ -78,7 +78,7 @@ type InviteUpdateRequest struct {
 
 // OutputEvent defines model for OutputEvent.
 type OutputEvent struct {
-	CreateAt     *string       `json:"CreateAt,omitempty"`
+	CreatedAt    *string       `json:"CreatedAt,omitempty"`
 	Creator      *OutputUser   `json:"Creator,omitempty"`
 	Details      *string       `json:"Details,omitempty"`
 	From         *string       `json:"From,omitempty"`
@@ -88,18 +88,18 @@ type OutputEvent struct {
 	Participants *[]OutputUser `json:"Participants,omitempty"`
 	ScheduleRule *string       `json:"ScheduleRule,omitempty"`
 	Till         *string       `json:"Till,omitempty"`
-	UpdateAt     *string       `json:"UpdateAt,omitempty"`
+	UpdatedAt    *string       `json:"UpdatedAt,omitempty"`
 }
 
 // OutputUser defines model for OutputUser.
 type OutputUser struct {
-	CreateAt       *string `json:"CreateAt,omitempty"`
+	CreatedAt      *string `json:"CreatedAt,omitempty"`
 	Email          *string `json:"Email,omitempty"`
 	FirstName      *string `json:"FirstName,omitempty"`
 	ID             *int    `json:"ID,omitempty"`
 	LastName       *string `json:"LastName,omitempty"`
 	TimeZoneOffset *int    `json:"TimeZoneOffset,omitempty"`
-	UpdateAt       *string `json:"UpdateAt,omitempty"`
+	UpdatedAt      *string `json:"UpdatedAt,omitempty"`
 }
 
 // TokenPayload defines model for TokenPayload.

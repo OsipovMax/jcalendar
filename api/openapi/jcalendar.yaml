@@ -296,9 +296,9 @@ components:
       properties:
         ID:
           type: integer
-        CreateAt:
+        CreatedAt:
           type: string
-        UpdateAt:
+        UpdatedAt:
           type: string
         FirstName:
           type: string
@@ -351,9 +351,9 @@ components:
       properties:
         ID:
           type: integer
-        CreateAt:
+        CreatedAt:
           type: string
-        UpdateAt:
+        UpdatedAt:
           type: string
         From:
           type: string

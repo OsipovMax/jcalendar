@@ -4,6 +4,10 @@ import (
 	"context"
 	"os"
 
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/invites"
 	"jcalendar/internal/service/repository/users"
@@ -14,10 +18,6 @@ import (
 	qrevent "jcalendar/internal/service/usecase/queries/event"
 	qrinvite "jcalendar/internal/service/usecase/queries/invite"
 	qruser "jcalendar/internal/service/usecase/queries/user"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 const (
@@ -31,11 +31,6 @@ type Application struct {
 }
 
 func NewApplication(ctx context.Context, db *gorm.DB) (*Application, error) {
-	db, err := NewDB(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	var (
 		erepo = events.NewRepository(db)
 		irepo = invites.NewRepository(db)

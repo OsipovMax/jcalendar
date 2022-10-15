@@ -26,7 +26,7 @@ func (e *EventManager) GetClosestFreeWindow(ctx context.Context, userIDs []int, 
 		var evs []*eevent.Event
 		evs, err = e.GetEventsInInterval(ctx, uint(userID), now.Format(time.RFC3339), now.AddDate(1, 0, 0).Format(time.RFC3339))
 		if err != nil {
-			return time.Time{}, time.Time{}, err //TODO validate mb user is not exist
+			return time.Time{}, time.Time{}, err
 		}
 
 		for _, ev := range evs {
@@ -65,10 +65,8 @@ func (e *EventManager) getClosestFreeWindow(_ context.Context, intervals []*Inte
 
 		if nextInterval.From.Sub(curInterval.Till) > winSize {
 			break
-		} else {
-			if nextInterval.Till.After(curInterval.Till) {
-				curInterval = nextInterval
-			}
+		} else if nextInterval.Till.After(curInterval.Till) {
+			curInterval = nextInterval
 		}
 	}
 

@@ -25,6 +25,7 @@ func (e *EventManager) HandleRule(
 	return e.tokenize(ctx, eventFrom, parts)
 }
 
+// nolint: funlen
 func (e *EventManager) tokenize(
 	_ context.Context,
 	eventStartedTimestamp time.Time,

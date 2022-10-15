@@ -9,6 +9,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	eevent "jcalendar/internal/service/entity/event"
@@ -17,9 +20,6 @@ import (
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetEventsId(t *testing.T) {
@@ -74,11 +74,11 @@ func TestGetEventsId(t *testing.T) {
 			application, err = app.NewApplication(ctx, db)
 			require.NoError(t, err)
 
-			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userHashedPassword, userTimeZoneOffset)
+			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, creator)
 			require.NoError(t, err)
 
-			participant := euser.NewUser(ctx, userFirstName, "sidorov", "sidorov@mail.ru", userHashedPassword, userTimeZoneOffset)
+			participant := euser.NewUser(ctx, userFirstName, "sidorov", "sidorov@mail.ru", userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, participant)
 			require.NoError(t, err)
 
@@ -114,17 +114,17 @@ func TestGetEventsId(t *testing.T) {
 
 				expectedEvent := getEventJSON(creator, participant)
 
-				expectedEvent.Data.ID = pcaster(1)
-				expectedEvent.Data.CreateAt = actualEvent.Data.CreateAt
-				expectedEvent.Data.UpdateAt = actualEvent.Data.UpdateAt
+				expectedEvent.Data.ID = pkg.Type2pointer(1)
+				expectedEvent.Data.CreatedAt = actualEvent.Data.CreatedAt
+				expectedEvent.Data.UpdatedAt = actualEvent.Data.UpdatedAt
 
 				expectedEvent.Data.Creator.ID = actualEvent.Data.Creator.ID
-				expectedEvent.Data.Creator.CreateAt = actualEvent.Data.Creator.CreateAt
-				expectedEvent.Data.Creator.UpdateAt = actualEvent.Data.Creator.UpdateAt
+				expectedEvent.Data.Creator.CreatedAt = actualEvent.Data.Creator.CreatedAt
+				expectedEvent.Data.Creator.UpdatedAt = actualEvent.Data.Creator.UpdatedAt
 
 				(*expectedEvent.Data.Participants)[0].ID = (*actualEvent.Data.Participants)[0].ID
-				(*expectedEvent.Data.Participants)[0].CreateAt = (*actualEvent.Data.Participants)[0].CreateAt
-				(*expectedEvent.Data.Participants)[0].UpdateAt = (*actualEvent.Data.Participants)[0].UpdateAt
+				(*expectedEvent.Data.Participants)[0].CreatedAt = (*actualEvent.Data.Participants)[0].CreatedAt
+				(*expectedEvent.Data.Participants)[0].UpdatedAt = (*actualEvent.Data.Participants)[0].UpdatedAt
 
 				require.True(t, reflect.DeepEqual(expectedEvent, actualEvent))
 			}

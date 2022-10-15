@@ -13,7 +13,11 @@ type CreateUserCommand struct {
 	HashedPassword string
 }
 
-func NewCreateUserCommand(_ context.Context, firstName, lastName, email, hashedPassword string, timeZoneOffset int) (*CreateUserCommand, error) {
+func NewCreateUserCommand(
+	_ context.Context,
+	firstName, lastName, email, hashedPassword string,
+	timeZoneOffset int,
+) (*CreateUserCommand, error) {
 	if firstName == "" {
 		return nil, errors.New("missing firstName value")
 	}

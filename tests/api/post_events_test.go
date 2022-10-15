@@ -10,6 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	eevent "jcalendar/internal/service/entity/event"
@@ -18,9 +21,6 @@ import (
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPostEvents(t *testing.T) {
@@ -39,14 +39,14 @@ func TestPostEvents(t *testing.T) {
 			testSubTittle: "invalid request body",
 			eventRequest: jcalendarsrv.EventRequest{
 				Data: &jcalendarsrv.InputEvent{
-					From:         pcaster(eventFromTimestamp.Format(time.RFC3339)),
-					Till:         pcaster(eventTillTimestamp.Format(time.RFC3339)),
-					CreatorID:    pcaster(0),
+					From:         pkg.Type2pointer(eventFromTimestamp.Format(time.RFC3339)),
+					Till:         pkg.Type2pointer(eventTillTimestamp.Format(time.RFC3339)),
+					CreatorID:    pkg.Type2pointer(0),
 					Participants: &[]int{},
-					ScheduleRule: pcaster(""),
-					Details:      pcaster("details"),
-					IsRepeat:     pcaster(false),
-					IsPrivate:    pcaster(true),
+					ScheduleRule: pkg.Type2pointer(""),
+					Details:      pkg.Type2pointer("details"),
+					IsRepeat:     pkg.Type2pointer(false),
+					IsPrivate:    pkg.Type2pointer(true),
 				},
 			},
 			expectedStatusCode: 400,
@@ -55,14 +55,14 @@ func TestPostEvents(t *testing.T) {
 			testSubTittle: "successfully creating new event",
 			eventRequest: jcalendarsrv.EventRequest{
 				Data: &jcalendarsrv.InputEvent{
-					From:         pcaster(eventFromTimestamp.Format(time.RFC3339)),
-					Till:         pcaster(eventTillTimestamp.Format(time.RFC3339)),
-					CreatorID:    pcaster(1),
+					From:         pkg.Type2pointer(eventFromTimestamp.Format(time.RFC3339)),
+					Till:         pkg.Type2pointer(eventTillTimestamp.Format(time.RFC3339)),
+					CreatorID:    pkg.Type2pointer(1),
 					Participants: &[]int{},
-					ScheduleRule: pcaster(""),
-					Details:      pcaster("details"),
-					IsRepeat:     pcaster(false),
-					IsPrivate:    pcaster(true),
+					ScheduleRule: pkg.Type2pointer(""),
+					Details:      pkg.Type2pointer("details"),
+					IsRepeat:     pkg.Type2pointer(false),
+					IsPrivate:    pkg.Type2pointer(true),
 				},
 			},
 		},
@@ -86,7 +86,7 @@ func TestPostEvents(t *testing.T) {
 			application, err = app.NewApplication(ctx, db)
 			require.NoError(t, err)
 
-			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userHashedPassword, userTimeZoneOffset)
+			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, creator)
 			require.NoError(t, err)
 

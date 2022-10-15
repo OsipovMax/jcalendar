@@ -3,11 +3,12 @@ package jcalendar
 import (
 	"net/http"
 
-	"jcalendar/internal/service/usecase/commands/event"
-	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+
+	"jcalendar/internal/pkg"
+	"jcalendar/internal/service/usecase/commands/event"
+	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
 func (s *Server) PostEvents(c echo.Context) error {
@@ -41,5 +42,5 @@ func (s *Server) PostEvents(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedEvent{ID: pcaster(int(eID))})
+	return c.JSON(http.StatusCreated, jcalendarsrv.CreatedEvent{ID: pkg.Type2pointer(int(eID))})
 }

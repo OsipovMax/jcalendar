@@ -6,12 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	eevent "jcalendar/internal/service/entity/event"
 	eschedule "jcalendar/internal/service/entity/schedule"
-
-	"github.com/stretchr/testify/require"
 )
 
+// nolint:funlen
 func TestExtendWithScheduledEvents(t *testing.T) {
 	var (
 		ctx  = context.Background()

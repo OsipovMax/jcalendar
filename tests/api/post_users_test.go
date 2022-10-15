@@ -9,15 +9,15 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	euser "jcalendar/internal/service/entity/user"
 	"jcalendar/internal/service/gateways/openapi/jcalendar"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPostUsers(t *testing.T) {
@@ -39,8 +39,8 @@ func TestPostUsers(t *testing.T) {
 					FirstName:      &userFirstName,
 					LastName:       &userLastName,
 					Email:          &userEmail,
-					Password:       pcaster("123123"),
-					TimeZoneOffset: pcaster(-1999),
+					Password:       pkg.Type2pointer("123123"),
+					TimeZoneOffset: pkg.Type2pointer(-1999),
 				},
 			},
 			expectedStatusCode: 400,
@@ -52,7 +52,7 @@ func TestPostUsers(t *testing.T) {
 					FirstName:      &userFirstName,
 					LastName:       &userLastName,
 					Email:          &userEmail,
-					Password:       pcaster("123123"),
+					Password:       pkg.Type2pointer("123123"),
 					TimeZoneOffset: &userTimeZoneOffset,
 				},
 			},

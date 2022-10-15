@@ -10,6 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	eevent "jcalendar/internal/service/entity/event"
@@ -18,9 +21,6 @@ import (
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetWindows(t *testing.T) {
@@ -83,11 +83,11 @@ func TestGetWindows(t *testing.T) {
 			application, err = app.NewApplication(ctx, db)
 			require.NoError(t, err)
 
-			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userHashedPassword, userTimeZoneOffset)
+			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, creator)
 			require.NoError(t, err)
 
-			otherCreator := euser.NewUser(ctx, userFirstName, "sidorov", "sidorov@mail.ru", userHashedPassword, userTimeZoneOffset)
+			otherCreator := euser.NewUser(ctx, userFirstName, "sidorov", "sidorov@mail.ru", userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, otherCreator)
 			require.NoError(t, err)
 

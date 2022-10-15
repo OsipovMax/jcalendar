@@ -8,15 +8,15 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	euser "jcalendar/internal/service/entity/user"
 	"jcalendar/internal/service/gateways/openapi/jcalendar"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPostLogin(t *testing.T) {
@@ -67,7 +67,7 @@ func TestPostLogin(t *testing.T) {
 			application, err = app.NewApplication(ctx, db)
 			require.NoError(t, err)
 
-			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userHashedPassword, userTimeZoneOffset)
+			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, creator)
 			require.NoError(t, err)
 

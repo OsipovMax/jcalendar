@@ -10,6 +10,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	eevent "jcalendar/internal/service/entity/event"
@@ -20,9 +23,6 @@ import (
 	"jcalendar/internal/service/repository/invites"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPutInvitesId(t *testing.T) {
@@ -43,7 +43,7 @@ func TestPutInvitesId(t *testing.T) {
 			inviteID:      "0",
 			inviteUpdateRequest: jcalendarsrv.InviteUpdateRequest{
 				Data: &jcalendarsrv.InviteUpdate{
-					IsAccepted: pcaster(true),
+					IsAccepted: pkg.Type2pointer(true),
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -53,7 +53,7 @@ func TestPutInvitesId(t *testing.T) {
 			inviteID:      "1",
 			inviteUpdateRequest: jcalendarsrv.InviteUpdateRequest{
 				Data: &jcalendarsrv.InviteUpdate{
-					IsAccepted: pcaster(true),
+					IsAccepted: pkg.Type2pointer(true),
 				},
 			},
 			expectedStatus: http.StatusBadRequest,
@@ -79,7 +79,7 @@ func TestPutInvitesId(t *testing.T) {
 			application, err = app.NewApplication(ctx, db)
 			require.NoError(t, err)
 
-			participant := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userHashedPassword, userTimeZoneOffset)
+			participant := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, participant)
 			require.NoError(t, err)
 

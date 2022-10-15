@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
+	"jcalendar/internal/pkg"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
@@ -23,8 +24,8 @@ func (s *Server) GetWindows(c echo.Context, params jcalendarsrv.GetWindowsParams
 		http.StatusOK,
 		jcalendarsrv.FreeWindowResponse{
 			Data: &jcalendarsrv.FreeWindow{
-				From: pcaster(from.Format(time.RFC3339)),
-				Till: pcaster(till.Format(time.RFC3339)),
+				From: pkg.Type2pointer(from.Format(time.RFC3339)),
+				Till: pkg.Type2pointer(till.Format(time.RFC3339)),
 			},
 		},
 	)

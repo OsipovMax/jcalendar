@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	euser "jcalendar/internal/service/entity/user"
-
 	"gorm.io/gorm"
+
+	euser "jcalendar/internal/service/entity/user"
 )
 
 type Repository struct {

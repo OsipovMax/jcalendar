@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
+	"gorm.io/gorm"
+
+	"jcalendar/internal/pkg"
 	euser "jcalendar/internal/service/entity/user"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"gorm.io/gorm"
 )
 
 const (
@@ -35,7 +36,7 @@ var (
 	userFirstName      = "Ivan"
 	userLastName       = "Ivanov"
 	userEmail          = "ivanov@mail.ru"
-	userHashedPassword = "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
+	userhp             = "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
 	userTimeZoneOffset = 10800
 
 	inviteUserID  uint = 1
@@ -44,10 +45,6 @@ var (
 
 func clearTables(ctx context.Context, db *gorm.DB) error {
 	return db.WithContext(ctx).Exec(clearTablesQuery).Error
-}
-
-func pcaster[T comparable](val T) *T {
-	return &val
 }
 
 func getEventJSON(c, p *euser.User) jcalendarsrv.EventResponse {
@@ -62,8 +59,8 @@ func getEventJSON(c, p *euser.User) jcalendarsrv.EventResponse {
 
 	return jcalendarsrv.EventResponse{
 		Data: &jcalendarsrv.OutputEvent{
-			From:    pcaster(eventFromTimestamp.String()),
-			Till:    pcaster(eventTillTimestamp.String()),
+			From:    pkg.Type2pointer(eventFromTimestamp.String()),
+			Till:    pkg.Type2pointer(eventTillTimestamp.String()),
 			Details: &eventDetails,
 			Creator: &jcalendarsrv.OutputUser{
 				FirstName:      &c.FirstName,

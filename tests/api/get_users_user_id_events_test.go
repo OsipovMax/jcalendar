@@ -9,6 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	eevent "jcalendar/internal/service/entity/event"
@@ -17,11 +20,9 @@ import (
 	"jcalendar/internal/service/repository/events"
 	"jcalendar/internal/service/repository/users"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
+// nolint:funlen
 func TestGetUsersUserIdEvents(t *testing.T) {
 	var (
 		ctx    = context.Background()
@@ -94,11 +95,11 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			application, err = app.NewApplication(ctx, db)
 			require.NoError(t, err)
 
-			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userHashedPassword, userTimeZoneOffset)
+			creator := euser.NewUser(ctx, userFirstName, userLastName, userEmail, userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, creator)
 			require.NoError(t, err)
 
-			otherCreator := euser.NewUser(ctx, userFirstName, "sidorov", "sidorov@mail.ru", userHashedPassword, userTimeZoneOffset)
+			otherCreator := euser.NewUser(ctx, userFirstName, "sidorov", "sidorov@mail.ru", userhp, userTimeZoneOffset)
 			err = urepo.CreateUser(ctx, otherCreator)
 			require.NoError(t, err)
 
@@ -129,6 +130,7 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 					false,
 				),
 			)
+			require.NoError(t, err)
 
 			_, err = erepo.CreateEvent(ctx,
 				eevent.NewEvent(
@@ -143,6 +145,7 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 					false,
 				),
 			)
+			require.NoError(t, err)
 
 			req := httptest.NewRequest(method, path, nil)
 			rec := httptest.NewRecorder()

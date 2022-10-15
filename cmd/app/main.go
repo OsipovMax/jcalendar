@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 
+	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
+
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
 	"jcalendar/internal/service/gateways/openapi/jcalendar"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
-	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -21,18 +21,17 @@ func main() {
 		logrus.WithContext(ctx).Fatalf("can`t get gorm db defenition: %v", err)
 	}
 
-	e := echo.New()
-	e.Use(jcalendar.GetConfirmedUserMiddleware())
-
 	application, err := app.NewApplication(ctx, db)
 	if err != nil {
 		logrus.WithContext(ctx).Fatalf("can`t create new application: %v", err)
 	}
 
-	jcalendarsrv.RegisterHandlers(e,
-		jcalendar.NewServer(application),
-	)
+	e := echo.New()
+	e.Use(jcalendar.GetConfirmedUserMiddleware())
+
+	jcalendarsrv.RegisterHandlers(e, jcalendar.NewServer(application))
 
 	if err = e.Start(":8080"); err != nil {
+		logrus.WithContext(ctx).Fatalf("can`t start HTTP Server: %v", err)
 	}
 }

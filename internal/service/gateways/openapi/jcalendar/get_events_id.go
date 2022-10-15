@@ -4,13 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	qrevent "jcalendar/internal/service/usecase/queries/event"
-	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
-
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+
+	"jcalendar/internal/pkg"
+	qrevent "jcalendar/internal/service/usecase/queries/event"
+	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
+// nolint:revive,stylecheck
 func (s *Server) GetEventsId(c echo.Context, id string) error {
 	ctx := c.Request().Context()
 
@@ -40,12 +42,12 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 		details = busyEventDetail
 	}
 
-	participants := make([]jcalendarsrv.OutputUser, len(e.Users), len(e.Users))
+	participants := make([]jcalendarsrv.OutputUser, len(e.Users))
 	for idx, participant := range e.Users {
 		participants[idx] = jcalendarsrv.OutputUser{
-			ID:             pcaster(int(participant.ID)),
-			CreateAt:       pcaster(participant.CreatedAt.String()),
-			UpdateAt:       pcaster(participant.UpdatedAt.String()),
+			ID:             pkg.Type2pointer(int(participant.ID)),
+			CreatedAt:      pkg.Type2pointer(participant.CreatedAt.String()),
+			UpdatedAt:      pkg.Type2pointer(participant.UpdatedAt.String()),
 			FirstName:      &participant.FirstName,
 			LastName:       &participant.LastName,
 			Email:          &participant.Email,
@@ -57,16 +59,16 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 		http.StatusOK,
 		jcalendarsrv.EventResponse{
 			Data: &jcalendarsrv.OutputEvent{
-				ID:       pcaster(int(e.ID)),
-				CreateAt: pcaster(e.CreatedAt.String()),
-				UpdateAt: pcaster(e.UpdatedAt.String()),
-				From:     pcaster(e.From.String()),
-				Till:     pcaster(e.Till.String()),
-				Details:  &details,
+				ID:        pkg.Type2pointer(int(e.ID)),
+				CreatedAt: pkg.Type2pointer(e.CreatedAt.String()),
+				UpdatedAt: pkg.Type2pointer(e.UpdatedAt.String()),
+				From:      pkg.Type2pointer(e.From.String()),
+				Till:      pkg.Type2pointer(e.Till.String()),
+				Details:   &details,
 				Creator: &jcalendarsrv.OutputUser{
-					ID:             pcaster(int(e.User.ID)),
-					CreateAt:       pcaster(e.User.CreatedAt.String()),
-					UpdateAt:       pcaster(e.User.UpdatedAt.String()),
+					ID:             pkg.Type2pointer(int(e.User.ID)),
+					CreatedAt:      pkg.Type2pointer(e.User.CreatedAt.String()),
+					UpdatedAt:      pkg.Type2pointer(e.User.UpdatedAt.String()),
 					FirstName:      &e.User.FirstName,
 					LastName:       &e.User.LastName,
 					Email:          &e.User.Email,

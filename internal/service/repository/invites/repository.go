@@ -5,14 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	einvite "jcalendar/internal/service/entity/invite"
-
 	"gorm.io/gorm"
-)
 
-const (
-	UserAssociation  = "User"
-	EventAssociation = "Event"
+	einvite "jcalendar/internal/service/entity/invite"
 )
 
 type Repository struct {

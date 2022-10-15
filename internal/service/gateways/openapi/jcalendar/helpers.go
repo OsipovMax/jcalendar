@@ -16,10 +16,6 @@ const (
 	secretKey     = "secret" // Use vault for storage and receive at the start of the service !!!
 )
 
-func pcaster[T comparable](val T) *T {
-	return &val
-}
-
 func isPasswordValid(hashedPass, pass string) bool {
 	return hashedPass == calcHash(pass)
 }

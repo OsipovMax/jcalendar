@@ -16,7 +16,7 @@ type Event struct {
 	From            time.Time                 `json:"from"`
 	Till            time.Time                 `json:"till"`
 	CreatorID       uint                      `json:"-"`
-	User            *user.User                `json:"creator" gorm:"foreignKey:CreatorID;references:ID"` //TODO
+	User            *user.User                `json:"creator" gorm:"foreignKey:CreatorID;references:ID"`
 	ParticipantsIDs []uint                    `json:"-" gorm:"-"`
 	Users           []*user.User              `json:"users" gorm:"many2many:events_users"`
 	Invites         []*invite.Invite          `json:"invites"`
