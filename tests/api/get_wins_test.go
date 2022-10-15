@@ -47,7 +47,7 @@ func TestGetWindows(t *testing.T) {
 			testSubTittle:      "invalid win size param",
 			userIDs:            []int{1, 2},
 			winSize:            "abc",
-			expectedStatusCode: http.StatusInternalServerError,
+			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			testSubTittle:      "not existing users",

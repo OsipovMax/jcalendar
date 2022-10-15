@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"jcalendar/internal/pkg"
-	"jcalendar/internal/service/usecase/commands/user"
+	cmduser "jcalendar/internal/service/usecase/commands/user"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
@@ -19,7 +19,7 @@ func (s *Server) PostUsers(c echo.Context) error {
 		return err
 	}
 
-	cmd, err := user.NewCreateUserCommand(
+	cmd, err := cmduser.NewCreateUserCommand(
 		ctx,
 		*req.Data.FirstName,
 		*req.Data.LastName,
@@ -27,6 +27,7 @@ func (s *Server) PostUsers(c echo.Context) error {
 		calcHash(*req.Data.Password),
 		*req.Data.TimeZoneOffset,
 	)
+
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t create CreateUser command: %v", err)
 		return echo.ErrBadRequest

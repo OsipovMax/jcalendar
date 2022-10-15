@@ -19,10 +19,5 @@ func NewGetInviteQueryHandler(getter Getter) GetInviteQueryHandler {
 }
 
 func (ch *GetInviteQueryHandler) Handle(ctx context.Context, query *GetInviteQuery) (*einvite.Invite, error) {
-	e, err := ch.getter.GetInviteByID(ctx, query.InviteID)
-	if err != nil {
-		return nil, err
-	}
-
-	return e, nil
+	return ch.getter.GetInviteByID(ctx, query.InviteID)
 }

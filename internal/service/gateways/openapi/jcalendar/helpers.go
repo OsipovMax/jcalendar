@@ -10,12 +10,6 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-const (
-	userIDClaim   = "userID"
-	userNameClaim = "userName"
-	secretKey     = "secret" // Use vault for storage and receive at the start of the service !!!
-)
-
 func isPasswordValid(hashedPass, pass string) bool {
 	return hashedPass == calcHash(pass)
 }

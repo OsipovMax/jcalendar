@@ -10,11 +10,6 @@ import (
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
-const (
-	usernameKey = "username"
-	passwordKey = "password"
-)
-
 func (s *Server) PostLogin(c echo.Context) error {
 	var (
 		ctx      = c.Request().Context()

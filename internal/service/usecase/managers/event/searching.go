@@ -3,22 +3,23 @@ package manager
 import (
 	"container/heap"
 	"context"
-	"errors"
-	"fmt"
 	"time"
+
+	"github.com/sirupsen/logrus"
 
 	eevent "jcalendar/internal/service/entity/event"
 )
 
 func (e *EventManager) GetClosestFreeWindow(ctx context.Context, userIDs []int, winSize string) (time.Time, time.Time, error) {
 	if len(userIDs) == 0 {
-		return time.Time{}, time.Time{}, errors.New("invalid list of users")
+		return time.Time{}, time.Time{}, ErrEmptyUserIDsList
 	}
 
 	now := time.Now().UTC()
 	winDuration, err := time.ParseDuration(winSize)
 	if err != nil {
-		return time.Time{}, time.Time{}, fmt.Errorf("invalid window duration: %w", err)
+		logrus.WithContext(ctx).Errorf("can`t parse winSize param: %v", err)
+		return time.Time{}, time.Time{}, ErrInvalidWindowDuration
 	}
 
 	intervals := make([]*Interval, 0)

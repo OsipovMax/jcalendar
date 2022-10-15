@@ -2,8 +2,9 @@ package manager
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"github.com/sirupsen/logrus"
 
 	eevent "jcalendar/internal/service/entity/event"
 	qrevent "jcalendar/internal/service/usecase/queries/event"
@@ -12,22 +13,26 @@ import (
 func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, from, till string) ([]*eevent.Event, error) {
 	ft, err := time.Parse(time.RFC3339, from)
 	if err != nil {
-		return nil, fmt.Errorf("invalid converting from data for getting events in interval: %w", err)
+		logrus.WithContext(ctx).Errorf("can`t parse from - %s for getting events in interval: %v", from, err)
+		return nil, ErrInvalidFromVal
 	}
 
 	tt, err := time.Parse(time.RFC3339, till)
 	if err != nil {
-		return nil, fmt.Errorf("invalid converting till data for getting events in interval: %w", err)
+		logrus.WithContext(ctx).Errorf("can`t parse till - %s for getting events in interval: %v", till, err)
+		return nil, ErrInvalidTillVal
 	}
 
 	q, err := qrevent.NewGetEventsInIntervalQuery(ctx, userID, ft, tt)
 	if err != nil {
-		return nil, fmt.Errorf("invalid get events in interval query command: %w", err)
+		logrus.WithContext(ctx).Errorf("can`t creating GetEventsInInterval query: %v", err)
+		return nil, ErrInvalidCreatingQuery
 	}
 
 	evs, err := e.EventsInIntervalQueryHandler.Handle(ctx, q)
 	if err != nil {
-		return nil, fmt.Errorf("invalid execute get events in interval query command: %w", err)
+		logrus.WithContext(ctx).Errorf("invalid executing GetEventsInInterval query : %v", err)
+		return evs, ErrInvalidExecutingQuery
 	}
 
 	return e.extendWithScheduledEvents(ctx, evs, ft, tt), nil

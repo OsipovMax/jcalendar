@@ -1,6 +1,7 @@
 package jcalendar
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"jcalendar/internal/pkg"
+	mevent "jcalendar/internal/service/usecase/managers/event"
 	jcalendarsrv "jcalendar/pkg/openapi/jcalendar"
 )
 
@@ -24,10 +26,13 @@ func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcal
 	es, err := s.application.EventManager.GetEventsInInterval(ctx, uint(iid), params.From, params.Till)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t get events in interval from event : %v", err)
-		if len(es) == 0 {
-			return echo.ErrInternalServerError
+		if errors.Is(err, mevent.ErrInvalidExecutingQuery) {
+			if es == nil {
+				return echo.ErrInternalServerError
+			}
+			return echo.ErrNotFound
 		}
-		return echo.ErrNotFound
+		return echo.ErrBadRequest
 	}
 
 	outputEvents := make([]jcalendarsrv.OutputEvent, len(es))

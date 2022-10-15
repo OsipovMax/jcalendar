@@ -31,14 +31,14 @@ func (r *Repository) CreateInvite(ctx context.Context, i *einvite.Invite) (uint,
 }
 
 func (r *Repository) GetInviteByID(ctx context.Context, id uint) (*einvite.Invite, error) {
-	i := &einvite.Invite{}
-	err := r.db.WithContext(ctx).First(i, id).Error
+	inv := &einvite.Invite{}
+	err := r.db.WithContext(ctx).First(inv, id).Error
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, fmt.Errorf("invalid getting invite by id: %w", err)
 	}
 
-	return i, err
+	return inv, err
 }
 
 func (r *Repository) UpdateInviteStatusByID(ctx context.Context, id uint, isAccepted bool) error {

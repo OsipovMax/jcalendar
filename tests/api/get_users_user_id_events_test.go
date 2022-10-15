@@ -51,7 +51,7 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			userID:             "0",
 			from:               eventFromTimestamp.Format(time.RFC3339),
 			till:               eventTillTimestamp.Format(time.RFC3339),
-			expectedStatusCode: http.StatusInternalServerError,
+			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			testSubTittle:      "not existing user",
