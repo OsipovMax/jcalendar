@@ -15,6 +15,7 @@ const (
 	ParticipantsAssociations   = "Users"
 	CreatorAssociations        = "User"
 	EventSchedulesAssociations = "EventSchedules"
+	EventScheduleAssociations  = "EventSchedule"
 )
 
 type Repository struct {

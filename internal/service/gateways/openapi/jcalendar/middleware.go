@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"jcalendar/internal/metrics"
-
 	"github.com/labstack/echo/v4"
+
+	"jcalendar/internal/metrics"
 )
 
 const (

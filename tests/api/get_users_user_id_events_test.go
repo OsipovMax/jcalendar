@@ -14,8 +14,6 @@ import (
 
 	"jcalendar/internal/pkg"
 	"jcalendar/internal/service/app"
-	eevent "jcalendar/internal/service/entity/event"
-	einvite "jcalendar/internal/service/entity/invite"
 	euser "jcalendar/internal/service/entity/user"
 	"jcalendar/internal/service/gateways/openapi/jcalendar"
 	"jcalendar/internal/service/repository/events"
@@ -32,50 +30,55 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 	)
 
 	table := []*struct {
-		testSubTittle      string
-		userID             string
-		from, till         string
-		expectedStatusCode int
-		expectedEventsLen  int
+		testSubTittle            string
+		userID                   string
+		creatorID, participantID uint
+		isAccepted               bool
+		from, till               time.Time
+		expectedStatusCode       int
+		expectedEventsLen        int
 	}{
 		{
 			testSubTittle:      "invalid user id format",
 			userID:             "abc",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.Format(time.RFC3339),
+			from:               eventFromTimestamp,
+			till:               eventTillTimestamp,
 			expectedStatusCode: http.StatusBadRequest,
 			expectedEventsLen:  0,
 		},
 		{
 			testSubTittle:      "invalid user id value",
 			userID:             "0",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.Format(time.RFC3339),
+			from:               eventFromTimestamp,
+			till:               eventTillTimestamp,
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			testSubTittle:      "not existing user",
 			userID:             "5",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.Format(time.RFC3339),
+			from:               eventFromTimestamp,
+			till:               eventTillTimestamp,
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
 			testSubTittle:      "successfully getting all events in interval",
 			userID:             "1",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.AddDate(0, 0, 10).Format(time.RFC3339),
+			creatorID:          1,
+			participantID:      1,
+			isAccepted:         false,
+			from:               eventFromTimestamp,
+			till:               eventFromTimestamp.AddDate(0, 0, 7),
 			expectedStatusCode: http.StatusOK,
-			expectedEventsLen:  2,
+			expectedEventsLen:  10,
 		},
-		{
-			testSubTittle:      "successfully getting single events in interval",
-			userID:             "1",
-			from:               eventFromTimestamp.Format(time.RFC3339),
-			till:               eventTillTimestamp.AddDate(0, 0, 1).Format(time.RFC3339),
-			expectedStatusCode: http.StatusOK,
-			expectedEventsLen:  1,
-		},
+		//{
+		//	testSubTittle:      "successfully getting single events in interval",
+		//	userID:             "1",
+		//	from:               eventFromTimestamp.Format(time.RFC3339),
+		//	till:               eventTillTimestamp.AddDate(0, 0, 1).Format(time.RFC3339),
+		//	expectedStatusCode: http.StatusOK,
+		//	expectedEventsLen:  1,
+		//},
 	}
 
 	db, err := pkg.NewDB(ctx)
@@ -104,70 +107,15 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			err = urepo.CreateUser(ctx, otherCreator)
 			require.NoError(t, err)
 
-			require.NoError(t,
-				erepo.CreateEvent(ctx,
-					eevent.NewEvent(
-						ctx,
-						eventFromTimestamp,
-						eventTillTimestamp,
-						1,
-						[]uint{2},
-						eventDetails,
-						nil,
-						nil,
-						[]*euser.User{{ID: 2}},
-						[]*einvite.Invite{{UserID: 2, IsAccepted: false}},
-						false,
-						false,
-					),
-				),
-			)
-
-			require.NoError(t,
-				erepo.CreateEvent(ctx,
-					eevent.NewEvent(
-						ctx,
-						eventFromTimestamp.AddDate(0, 0, 3),
-						eventTillTimestamp.AddDate(0, 0, 3),
-						1,
-						[]uint{2},
-						eventDetails,
-						nil,
-						nil,
-						[]*euser.User{{ID: 2}},
-						[]*einvite.Invite{{UserID: 2, IsAccepted: false}},
-						false,
-						false,
-					),
-				),
-			)
-
-			require.NoError(t,
-				erepo.CreateEvent(ctx,
-					eevent.NewEvent(
-						ctx,
-						eventFromTimestamp.AddDate(0, 0, 3),
-						eventTillTimestamp.AddDate(0, 0, 3),
-						2,
-						[]uint{},
-						eventDetails,
-						nil,
-						nil,
-						nil,
-						nil,
-						false,
-						false,
-					),
-				),
-			)
+			require.NoError(t, fillEvents(ctx, erepo, row.from, row.till))
 
 			req := httptest.NewRequest(method, path, nil)
 			rec := httptest.NewRecorder()
 			c := echo.New().NewContext(req, rec)
 			c.SetParamNames("user_id")
 			c.SetParamValues(row.userID)
-			c.QueryParams().Set("from", row.from)
-			c.QueryParams().Set("till", row.till)
+			c.QueryParams().Set("from", row.from.Format(time.RFC3339))
+			c.QueryParams().Set("till", row.till.Format(time.RFC3339))
 			c.Set("userID", uint(1))
 
 			err = (&jcalendarsrv.ServerInterfaceWrapper{Handler: jcalendar.NewServer(application)}).GetUsersUserIdEvents(c)
