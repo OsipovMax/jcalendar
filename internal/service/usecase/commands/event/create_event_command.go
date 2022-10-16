@@ -61,6 +61,10 @@ func NewCreateEventCommand(
 		return nil, fmt.Errorf("invalid converting till data: %w", err)
 	}
 
+	if tt.Before(ft) || tt.Equal(ft) {
+		return nil, errors.New("from more or equal than till")
+	}
+
 	return &CreateEventCommand{
 		From:            ft,
 		Till:            tt,

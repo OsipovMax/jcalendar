@@ -25,7 +25,11 @@ func (e *EventManager) GetClosestFreeWindow(ctx context.Context, userIDs []int, 
 	intervals := make([]*Interval, 0)
 	for _, userID := range userIDs {
 		var evs []*eevent.Event
-		evs, err = e.GetEventsInInterval(ctx, uint(userID), now.Format(time.RFC3339), now.AddDate(1, 0, 0).Format(time.RFC3339))
+		evs, err = e.GetEventsInInterval(ctx,
+			uint(userID),
+			now.Format(time.RFC3339),
+			now.AddDate(1, 0, 0).Format(time.RFC3339),
+		)
 		if err != nil {
 			return time.Time{}, time.Time{}, err
 		}

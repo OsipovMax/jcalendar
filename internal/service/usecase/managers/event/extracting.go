@@ -54,7 +54,9 @@ func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eeven
 			)
 
 			if (timestamp.Equal(ft) || timestamp.After(ft)) && timestamp.Before(tt) {
-				fullEventsList = append(fullEventsList, ev)
+				eventCopy := copyEvent(ev)
+				eventCopy.From = timestamp
+				fullEventsList = append(fullEventsList, eventCopy)
 			}
 
 			endTimeStamp := tt
