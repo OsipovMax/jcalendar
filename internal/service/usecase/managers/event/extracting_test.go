@@ -18,6 +18,9 @@ func TestExtendWithScheduledEvents(t *testing.T) {
 		ctx  = context.Background()
 		from = time.Date(2022, 1, 1, 12, 30, 0, 0, time.Local)
 		till = time.Date(2022, 1, 1, 13, 0, 0, 0, time.Local)
+
+		regularCaseFrom = time.Date(2022, 1, 3, 0, 0, 0, 0, time.Local)
+		regularCaseTill = time.Date(2022, 1, 10, 0, 0, 0, 0, time.Local)
 	)
 
 	e := NewEventManager(ctx, nil)
@@ -154,6 +157,61 @@ func TestExtendWithScheduledEvents(t *testing.T) {
 				{
 					From:     from,
 					Till:     till,
+					Details:  "details",
+					IsRepeat: true,
+				},
+			},
+		},
+		{
+			TestSubTittle: "repeated not regular events in interval",
+			From:          regularCaseFrom,
+			Till:          regularCaseTill,
+			Events: []*eevent.Event{
+				{
+					From:    regularCaseFrom,
+					Till:    regularCaseFrom.Add(30 * time.Minute),
+					Details: "details",
+					EventSchedules: []*eschedule.EventSchedule{
+						{
+							BeginOccurrence: regularCaseFrom,
+							IntervalVal:     1,
+							EndingMode:      "NONE",
+							Shift:           "DAILY",
+							IsRegular:       false,
+							SchedulerType:   "COMMON",
+						},
+					},
+					IsRepeat: true,
+				},
+			},
+			ExpectedEvents: []*eevent.Event{
+				{
+					From:     regularCaseFrom,
+					Till:     regularCaseFrom.Add(30 * time.Minute),
+					Details:  "details",
+					IsRepeat: true,
+				},
+				{
+					From:     regularCaseFrom.AddDate(0, 0, 1),
+					Till:     regularCaseFrom.AddDate(0, 0, 1).Add(30 * time.Minute),
+					Details:  "details",
+					IsRepeat: true,
+				},
+				{
+					From:     regularCaseFrom.AddDate(0, 0, 2),
+					Till:     regularCaseFrom.AddDate(0, 0, 2).Add(30 * time.Minute),
+					Details:  "details",
+					IsRepeat: true,
+				},
+				{
+					From:     regularCaseFrom.AddDate(0, 0, 3),
+					Till:     regularCaseFrom.AddDate(0, 0, 3).Add(30 * time.Minute),
+					Details:  "details",
+					IsRepeat: true,
+				},
+				{
+					From:     regularCaseFrom.AddDate(0, 0, 4),
+					Till:     regularCaseFrom.AddDate(0, 0, 4).Add(30 * time.Minute),
 					Details:  "details",
 					IsRepeat: true,
 				},

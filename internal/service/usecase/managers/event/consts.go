@@ -1,7 +1,8 @@
 package manager
 
 const (
-	dataEndingMode = "DATA"
+	dataEndingMode     = "DATA"
+	commonScheduleType = "COMMON"
 )
 
 const (

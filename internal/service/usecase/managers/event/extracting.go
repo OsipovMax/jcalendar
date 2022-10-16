@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -62,8 +63,8 @@ func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eeven
 				endTimeStamp = sch.EndOccurrence
 			}
 
+			shift := sch.Shift
 			for timestamp.Before(endTimeStamp) {
-				shift := sch.Shift
 				switch shift {
 				case dailyShiftKey:
 					timestamp = timestamp.AddDate(0, 0, 1*sch.IntervalVal)
@@ -76,6 +77,19 @@ func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eeven
 				}
 
 				if timestamp.Before(tt) && timestamp.Add(eventDuration).Before(tt) {
+
+					/*
+						Exclude events in weekend
+					*/
+					//fmt.Println(sch.SchedulerType == commonScheduleType, shift == dailyShiftKey, !sch.IsRegular, timestamp.Weekday(), timestamp.Weekday() == 6, timestamp.Weekday() == 7)
+					if sch.SchedulerType == commonScheduleType &&
+						shift == dailyShiftKey &&
+						!sch.IsRegular &&
+						(timestamp.Weekday() == time.Saturday || timestamp.Weekday() == time.Sunday) {
+						fmt.Println()
+						continue
+					}
+
 					eventCopy := copyEvent(ev)
 					eventCopy.From = timestamp
 					eventCopy.Till = eventCopy.From.Add(eventDuration)
