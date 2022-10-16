@@ -131,8 +131,8 @@ type PutInvitesIdJSONBody = InviteUpdateRequest
 // PostUsersJSONBody defines parameters for PostUsers.
 type PostUsersJSONBody = UserRequest
 
-// GetUsersUserIdEventsParams defines parameters for GetUsersUserIdEvents.
-type GetUsersUserIdEventsParams struct {
+// GetUsersIdEventsParams defines parameters for GetUsersIdEvents.
+type GetUsersIdEventsParams struct {
 	// begin of interval
 	From string `form:"from" json:"from"`
 

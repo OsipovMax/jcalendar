@@ -13,10 +13,10 @@ import (
 )
 
 // nolint:revive,stylecheck
-func (s *Server) GetUsersUserIdEvents(c echo.Context, userId string, params jcalendarsrv.GetUsersUserIdEventsParams) error {
+func (s *Server) GetUsersIdEvents(c echo.Context, id string, params jcalendarsrv.GetUsersIdEventsParams) error {
 	ctx := c.Request().Context()
 
-	iid, err := strconv.Atoi(userId)
+	iid, err := strconv.Atoi(id)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t convert string userID param for getting events in interval: %v", err)
 		return echo.ErrBadRequest

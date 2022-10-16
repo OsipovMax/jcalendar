@@ -31,14 +31,14 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 
 	table := []*struct {
 		testSubTittle      string
-		userID             string
+		id                 string
 		from, till         time.Time
 		expectedStatusCode int
 		expectedEventsLen  int
 	}{
 		{
 			testSubTittle:      "invalid user id format",
-			userID:             "abc",
+			id:                 "abc",
 			from:               eventFromTimestamp,
 			till:               eventTillTimestamp,
 			expectedStatusCode: http.StatusBadRequest,
@@ -46,21 +46,21 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 		},
 		{
 			testSubTittle:      "invalid user id value",
-			userID:             "0",
+			id:                 "0",
 			from:               eventFromTimestamp,
 			till:               eventTillTimestamp,
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			testSubTittle:      "not existing user",
-			userID:             "5",
+			id:                 "5",
 			from:               eventFromTimestamp,
 			till:               eventTillTimestamp,
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
 			testSubTittle:      "successfully getting all events in interval(creator)",
-			userID:             "1",
+			id:                 "1",
 			from:               eventFromTimestamp,
 			till:               eventFromTimestamp.AddDate(0, 0, 7),
 			expectedStatusCode: http.StatusOK,
@@ -68,7 +68,7 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 		},
 		{
 			testSubTittle:      "successfully getting single events in interval(participant)",
-			userID:             "2",
+			id:                 "2",
 			from:               eventFromTimestamp,
 			till:               eventFromTimestamp.AddDate(0, 0, 7),
 			expectedStatusCode: http.StatusOK,
@@ -107,13 +107,13 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			req := httptest.NewRequest(method, path, nil)
 			rec := httptest.NewRecorder()
 			c := echo.New().NewContext(req, rec)
-			c.SetParamNames("user_id")
-			c.SetParamValues(row.userID)
+			c.SetParamNames("id")
+			c.SetParamValues(row.id)
 			c.QueryParams().Set("from", row.from.Format(time.RFC3339))
 			c.QueryParams().Set("till", row.till.Format(time.RFC3339))
 			c.Set("userID", uint(1))
 
-			err = (&jcalendarsrv.ServerInterfaceWrapper{Handler: jcalendar.NewServer(application)}).GetUsersUserIdEvents(c)
+			err = (&jcalendarsrv.ServerInterfaceWrapper{Handler: jcalendar.NewServer(application)}).GetUsersIdEvents(c)
 			if err != nil {
 				actualErr := &echo.HTTPError{}
 				require.True(t, errors.As(err, &actualErr))

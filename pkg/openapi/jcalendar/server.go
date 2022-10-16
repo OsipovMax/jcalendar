@@ -29,8 +29,8 @@ type ServerInterface interface {
 	// (POST /users)
 	PostUsers(ctx echo.Context) error
 	// Returns events information for user with user_id
-	// (GET /users/{user_id}/events)
-	GetUsersUserIdEvents(ctx echo.Context, userId string, params GetUsersUserIdEventsParams) error
+	// (GET /users/{id}/events)
+	GetUsersIdEvents(ctx echo.Context, id string, params GetUsersIdEventsParams) error
 	// Returns closets free window for meeting
 	// (GET /windows)
 	GetWindows(ctx echo.Context, params GetWindowsParams) error
@@ -100,19 +100,19 @@ func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 	return err
 }
 
-// GetUsersUserIdEvents converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersUserIdEvents(ctx echo.Context) error {
+// GetUsersIdEvents converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersIdEvents(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "user_id" -------------
-	var userId string
+	// ------------- Path parameter "id" -------------
+	var id string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "user_id", runtime.ParamLocationPath, ctx.Param("user_id"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter user_id: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetUsersUserIdEventsParams
+	var params GetUsersIdEventsParams
 	// ------------- Required query parameter "from" -------------
 
 	err = runtime.BindQueryParameter("form", true, true, "from", ctx.QueryParams(), &params.From)
@@ -128,7 +128,7 @@ func (w *ServerInterfaceWrapper) GetUsersUserIdEvents(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersUserIdEvents(ctx, userId, params)
+	err = w.Handler.GetUsersIdEvents(ctx, id, params)
 	return err
 }
 
@@ -190,7 +190,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/invites/:id", wrapper.PutInvitesId)
 	router.POST(baseURL+"/login", wrapper.PostLogin)
 	router.POST(baseURL+"/users", wrapper.PostUsers)
-	router.GET(baseURL+"/users/:user_id/events", wrapper.GetUsersUserIdEvents)
+	router.GET(baseURL+"/users/:id/events", wrapper.GetUsersIdEvents)
 	router.GET(baseURL+"/windows", wrapper.GetWindows)
 
 }

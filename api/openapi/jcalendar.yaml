@@ -75,14 +75,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/{user_id}/events:
+  /users/{id}/events:
     get:
       summary: Returns events information for user with user_id
       description: Returns information about enets for specific user
       tags:
         - events
       parameters:
-        - name: user_id
+        - name: id
           in: path
           description: user identificator
           required: true
