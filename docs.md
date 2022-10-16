@@ -105,6 +105,11 @@ curl -X 'GET' \
 {"Data":{"CreatedAt":"2022-10-15 18:39:09.187022 +0000 UTC","Creator":{"CreatedAt":"2022-10-15 18:23:42.134989 +0000 UTC","Email":"ivanov@mail.ru","FirstName":"Ivan","ID":1,"LastName":"Ivanov","TimeZoneOffset":3,"UpdatedAt":"2022-10-15 18:23:42.134989 +0000 UTC"},"Details":"details","From":"2022-10-12 15:00:00 +0000 UTC","ID":1,"IsPrivate":true,"IsRepeat":false,"Participants":[{"CreatedAt":"2022-10-15 18:32:58.810394 +0000 UTC","Email":"petrov@mail.ru","FirstName":"Petr","ID":2,"LastName":"Petrov","TimeZoneOffset":3,"UpdatedAt":"2022-10-15 18:32:58.810394 +0000 UTC"}],"Till":"2022-10-12 16:30:00 +0000 UTC","UpdatedAt":"2022-10-15 18:39:09.219167 +0000 UTC"}}
 ```
 
+Если пользователь не является создателем встречи и встреча приватная, то получим ответ такого вида:
+```
+{"Data":{"CreateAt":"2022-10-12 16:12:39.80724 +0000 UTC","CreatorID":1,"Details":"Busy","From":"2022-10-12 15:00:00 +0000 UTC","ID":8,"IsPrivate":true,"Till":"2022-10-12 16:00:00 +0000 UTC","UpdateAt":"2022-10-12 16:12:39.834795 +0000 UTC"}}
+```
+
 ## Подтверждение присутствия на встрече
 ```
 curl -X 'PUT' \
