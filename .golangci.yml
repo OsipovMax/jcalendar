@@ -53,7 +53,7 @@ linters-settings:
   gofmt:
     simplify: true
   gocognit:
-    min-complexity: 30
+    min-complexity: 45
 
 linters:
   enable:
