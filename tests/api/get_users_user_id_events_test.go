@@ -30,13 +30,11 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 	)
 
 	table := []*struct {
-		testSubTittle            string
-		userID                   string
-		creatorID, participantID uint
-		isAccepted               bool
-		from, till               time.Time
-		expectedStatusCode       int
-		expectedEventsLen        int
+		testSubTittle      string
+		userID             string
+		from, till         time.Time
+		expectedStatusCode int
+		expectedEventsLen  int
 	}{
 		{
 			testSubTittle:      "invalid user id format",
@@ -61,24 +59,21 @@ func TestGetUsersUserIdEvents(t *testing.T) {
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
-			testSubTittle:      "successfully getting all events in interval",
+			testSubTittle:      "successfully getting all events in interval(creator)",
 			userID:             "1",
-			creatorID:          1,
-			participantID:      1,
-			isAccepted:         false,
 			from:               eventFromTimestamp,
 			till:               eventFromTimestamp.AddDate(0, 0, 7),
 			expectedStatusCode: http.StatusOK,
 			expectedEventsLen:  10,
 		},
-		//{
-		//	testSubTittle:      "successfully getting single events in interval",
-		//	userID:             "1",
-		//	from:               eventFromTimestamp.Format(time.RFC3339),
-		//	till:               eventTillTimestamp.AddDate(0, 0, 1).Format(time.RFC3339),
-		//	expectedStatusCode: http.StatusOK,
-		//	expectedEventsLen:  1,
-		//},
+		{
+			testSubTittle:      "successfully getting single events in interval(participant)",
+			userID:             "2",
+			from:               eventFromTimestamp,
+			till:               eventFromTimestamp.AddDate(0, 0, 7),
+			expectedStatusCode: http.StatusOK,
+			expectedEventsLen:  8,
+		},
 	}
 
 	db, err := pkg.NewDB(ctx)
