@@ -32,7 +32,7 @@ func GetConfirmedUserMiddleware() echo.MiddlewareFunc {
 					statusCode = strconv.Itoa(eerr.Code)
 				}
 
-				metrics.HTTPRequestsTotal.WithLabelValues(c.Request().URL.String(), statusCode)
+				metrics.HTTPRequestsTotal.WithLabelValues(c.Request().URL.Path, statusCode)
 			}()
 
 			if MiddlewareSkipper(c) {
