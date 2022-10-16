@@ -50,7 +50,7 @@ func TestGetWindows(t *testing.T) {
 			expectedStatusCode: http.StatusInternalServerError,
 		},
 		{
-			testSubTittle:      "successfully getting all events in interval",
+			testSubTittle:      "successfully searching free window",
 			userIDs:            []int{1, 2},
 			winSize:            "15m",
 			expectedStatusCode: http.StatusOK,

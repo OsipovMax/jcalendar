@@ -31,11 +31,11 @@ func TestGetClosestFreeWindow(t *testing.T) {
 			ExpectedTill:  till.Add(winDuration),
 		},
 		{
-			TestSubTittle: "single time interval",
-			Intervals:     []*Interval{{From: from, Till: till}},
+			TestSubTittle: "F1___T1_F2___T2",
+			Intervals:     []*Interval{{From: from, Till: till}, {From: till.Add(winDuration / 2), Till: till.Add(winDuration * 3)}},
 			WinDuration:   winDuration,
-			ExpectedFrom:  till,
-			ExpectedTill:  till.Add(winDuration),
+			ExpectedFrom:  till.Add(winDuration * 3),
+			ExpectedTill:  till.Add(winDuration * 4),
 		},
 		{
 			TestSubTittle: "F1___T1___F2___T2",

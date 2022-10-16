@@ -56,7 +56,6 @@ func (e *EventManager) getClosestFreeWindow(_ context.Context, intervals []*Inte
 	curInterval := heap.Pop(&intervalHeap).(*Interval)
 
 	now := time.Now()
-
 	if curInterval.From.Sub(now) > winSize {
 		return now, now.Add(winSize)
 	}
