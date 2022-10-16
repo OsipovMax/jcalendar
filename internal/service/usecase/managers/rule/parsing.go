@@ -2,8 +2,6 @@ package manager
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -18,8 +16,8 @@ func (e *RuleManager) HandleRule(
 ) ([]*eschedule.EventSchedule, error) {
 	parts := strings.Split(eventScheduleRule, ";")
 
-	if len(parts) == 0 {
-		return nil, errors.New("invalid rule expr")
+	if len(parts) < minTokenCount {
+		return nil, ErrInvalidRuleExpr
 	}
 
 	return e.tokenize(ctx, eventFrom, parts)
@@ -40,7 +38,7 @@ func (e *RuleManager) tokenize(
 		part := strings.Split(parts[idx], "=")
 
 		if len(part) < 2 {
-			return nil, fmt.Errorf("invalid part - %v", part)
+			return nil, ErrInvalidPartLen
 		}
 
 		switch part[0] {
@@ -51,21 +49,21 @@ func (e *RuleManager) tokenize(
 		case intervalKey:
 			intervalVal, err := strconv.Atoi(part[1])
 			if err != nil {
-				return nil, errors.New("invalid interval part")
+				return nil, ErrInvalidIntervalPartVal
 			}
 
 			schedule.IntervalVal = intervalVal
 		case dayModeKey:
 			isRegular, err := strconv.ParseBool(part[1])
 			if err != nil {
-				return nil, errors.New("invalid isEachDay part")
+				return nil, ErrInvalidIsRegularPartVal
 			}
 
 			schedule.IsRegular = isRegular
 		case EndOccurrenceKey:
 			t, err := time.Parse(time.RFC3339, part[1])
 			if err != nil {
-				return nil, errors.New("invalid EndOccurrence part")
+				return nil, ErrInvalidEndOccurrencePartVal
 			}
 
 			schedule.EndOccurrence = t
@@ -74,7 +72,7 @@ func (e *RuleManager) tokenize(
 		case CustomDayListKey:
 			strDaysList = part[1]
 		default:
-			return nil, errors.New("invalid rule format")
+			return nil, ErrUnknownRuleToken
 		}
 	}
 

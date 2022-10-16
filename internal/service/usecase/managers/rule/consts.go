@@ -11,3 +11,7 @@ const (
 	EndOccurrenceKey = "END_OCCURRENCE"
 	CustomDayListKey = "CUSTOM_DAY_LIST"
 )
+
+const (
+	minTokenCount = 5
+)

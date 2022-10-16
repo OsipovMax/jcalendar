@@ -18,64 +18,64 @@ func TestGetClosestFreeWindow(t *testing.T) {
 
 	e := NewEventManager(ctx, nil)
 	table := []*struct {
-		TestSubTittle              string
-		Intervals                  []*Interval
-		WinDuration                time.Duration
-		ExpectedFrom, ExpectedTill time.Time
+		testSubTittle              string
+		intervals                  []*Interval
+		winDuration                time.Duration
+		expectedFrom, expectedTill time.Time
 	}{
 		{
-			TestSubTittle: "single time interval",
-			Intervals:     []*Interval{{From: from, Till: till}},
-			WinDuration:   winDuration,
-			ExpectedFrom:  till,
-			ExpectedTill:  till.Add(winDuration),
+			testSubTittle: "single time interval",
+			intervals:     []*Interval{{From: from, Till: till}},
+			winDuration:   winDuration,
+			expectedFrom:  till,
+			expectedTill:  till.Add(winDuration),
 		},
 		{
-			TestSubTittle: "F1___T1_F2___T2",
-			Intervals:     []*Interval{{From: from, Till: till}, {From: till.Add(winDuration / 2), Till: till.Add(winDuration * 3)}},
-			WinDuration:   winDuration,
-			ExpectedFrom:  till.Add(winDuration * 3),
-			ExpectedTill:  till.Add(winDuration * 4),
+			testSubTittle: "F1___T1_F2___T2",
+			intervals:     []*Interval{{From: from, Till: till}, {From: till.Add(winDuration / 2), Till: till.Add(winDuration * 3)}},
+			winDuration:   winDuration,
+			expectedFrom:  till.Add(winDuration * 3),
+			expectedTill:  till.Add(winDuration * 4),
 		},
 		{
-			TestSubTittle: "F1___T1___F2___T2",
-			Intervals:     []*Interval{{From: from, Till: till}, {From: till.Add(winDuration * 2), Till: till.Add(winDuration * 3)}},
-			WinDuration:   winDuration,
-			ExpectedFrom:  till,
-			ExpectedTill:  till.Add(winDuration),
+			testSubTittle: "F1___T1___F2___T2",
+			intervals:     []*Interval{{From: from, Till: till}, {From: till.Add(winDuration * 2), Till: till.Add(winDuration * 3)}},
+			winDuration:   winDuration,
+			expectedFrom:  till,
+			expectedTill:  till.Add(winDuration),
 		},
 		{
-			TestSubTittle: "F1___F2___T2___T1",
-			Intervals:     []*Interval{{From: from, Till: till}, {From: from.Add(winDuration), Till: from.Add(winDuration + 5)}},
-			WinDuration:   winDuration,
-			ExpectedFrom:  till,
-			ExpectedTill:  till.Add(winDuration),
+			testSubTittle: "F1___F2___T2___T1",
+			intervals:     []*Interval{{From: from, Till: till}, {From: from.Add(winDuration), Till: from.Add(winDuration + 5)}},
+			winDuration:   winDuration,
+			expectedFrom:  till,
+			expectedTill:  till.Add(winDuration),
 		},
 		{
-			TestSubTittle: "F1___F2___T1___T2",
-			Intervals:     []*Interval{{From: from, Till: till}, {From: from.Add(winDuration), Till: till.Add(winDuration)}},
-			WinDuration:   winDuration,
-			ExpectedFrom:  till.Add(winDuration),
-			ExpectedTill:  till.Add(winDuration * 2),
+			testSubTittle: "F1___F2___T1___T2",
+			intervals:     []*Interval{{From: from, Till: till}, {From: from.Add(winDuration), Till: till.Add(winDuration)}},
+			winDuration:   winDuration,
+			expectedFrom:  till.Add(winDuration),
+			expectedTill:  till.Add(winDuration * 2),
 		},
 		{
-			TestSubTittle: "F1___T1___F2___T3___T2___F3",
-			Intervals: []*Interval{
+			testSubTittle: "F1___T1___F2___T3___T2___F3",
+			intervals: []*Interval{
 				{From: from, Till: till},
 				{From: till.Add(winDuration * 2), Till: till.Add(winDuration * 5)},
 				{From: till.Add(winDuration * 3), Till: till.Add(winDuration * 7)},
 			},
-			WinDuration:  winDuration,
-			ExpectedFrom: till,
-			ExpectedTill: till.Add(winDuration),
+			winDuration:  winDuration,
+			expectedFrom: till,
+			expectedTill: till.Add(winDuration),
 		},
 	}
 
 	for _, row := range table {
-		t.Run(row.TestSubTittle, func(t *testing.T) {
-			actualFrom, actualTill := e.getClosestFreeWindow(ctx, row.Intervals, row.WinDuration)
-			require.Equal(t, row.ExpectedFrom, actualFrom)
-			require.Equal(t, row.ExpectedTill, actualTill)
+		t.Run(row.testSubTittle, func(t *testing.T) {
+			actualFrom, actualTill := e.getClosestFreeWindow(ctx, row.intervals, row.winDuration)
+			require.Equal(t, row.expectedFrom, actualFrom)
+			require.Equal(t, row.expectedTill, actualTill)
 		})
 	}
 }

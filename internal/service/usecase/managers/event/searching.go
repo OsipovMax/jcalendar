@@ -15,7 +15,7 @@ func (e *EventManager) GetClosestFreeWindow(ctx context.Context, userIDs []int, 
 		return time.Time{}, time.Time{}, ErrEmptyUserIDsList
 	}
 
-	now := time.Now().UTC()
+	now := time.Now()
 	winDuration, err := time.ParseDuration(winSize)
 	if err != nil {
 		logrus.WithContext(ctx).Errorf("can`t parse winSize param: %v", err)
@@ -45,7 +45,7 @@ func (e *EventManager) getClosestFreeWindow(_ context.Context, intervals []*Inte
 	heap.Init(&intervalHeap)
 
 	if len(intervals) == 0 {
-		now := time.Now().UTC()
+		now := time.Now()
 		return now, now.Add(winSize)
 	}
 
