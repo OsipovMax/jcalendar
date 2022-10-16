@@ -23,7 +23,6 @@ type Event struct {
 	Details         string                    `json:"details"`
 	ScheduleRule    *string                   `json:"schedule_rule"`
 	EventSchedules  []*schedule.EventSchedule `json:"-"`
-	EventSchedule   *schedule.EventSchedule   `json:"-"`
 	IsPrivate       bool                      `json:"is_private"`
 	IsRepeat        bool                      `json:"is_repeat"`
 }

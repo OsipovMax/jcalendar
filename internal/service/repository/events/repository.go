@@ -15,7 +15,6 @@ const (
 	ParticipantsAssociations   = "Users"
 	CreatorAssociations        = "User"
 	EventSchedulesAssociations = "EventSchedules"
-	EventScheduleAssociations  = "EventSchedule"
 )
 
 type Repository struct {
@@ -66,7 +65,7 @@ func (r *Repository) GetEventByID(ctx context.Context, id uint) (*eevent.Event, 
 }
 
 func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from, till time.Time) ([]*eevent.Event, error) {
-	es := make([]*eevent.Event, 0)
+	evs := make([]*eevent.Event, 0)
 	err := r.db.WithContext(ctx).
 		Joins("LEFT JOIN event_schedules ON events.id = event_schedules.event_id").
 		Joins("LEFT JOIN invites ON events.id = invites.event_id").
@@ -80,16 +79,28 @@ func (r *Repository) GetEventsInInterval(ctx context.Context, userID uint, from,
 		Preload(CreatorAssociations).
 		Preload(EventSchedulesAssociations).
 		Preload(ParticipantsAssociations).
-		Find(&es).
+		Find(&evs).
 		Error
+
+	var (
+		isSeen     = make(map[uint]struct{})
+		distinctEs = make([]*eevent.Event, 0) // Gorm return full preload by event_id on each match
+	)
+
+	for _, ev := range evs {
+		if _, ok := isSeen[ev.ID]; !ok {
+			distinctEs = append(distinctEs, ev)
+		}
+		isSeen[ev.ID] = struct{}{}
+	}
 
 	if err != nil {
 		return nil, fmt.Errorf("invalid getting events in interval by id: %w", err)
 	}
 
-	if len(es) == 0 {
-		return es, errors.New("records not found")
+	if len(distinctEs) == 0 {
+		return distinctEs, errors.New("records not found")
 	}
 
-	return es, nil
+	return distinctEs, nil
 }

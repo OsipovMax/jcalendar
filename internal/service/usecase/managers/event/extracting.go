@@ -41,14 +41,7 @@ func (e *EventManager) GetEventsInInterval(ctx context.Context, userID uint, fro
 func (e *EventManager) extendWithScheduledEvents(_ context.Context, evs []*eevent.Event, ft, tt time.Time) []*eevent.Event {
 	fullEventsList := make([]*eevent.Event, 0)
 
-	isSeen := make(map[uint]struct{})
 	for _, ev := range evs {
-		if _, ok := isSeen[ev.ID]; ok {
-			continue
-		}
-
-		isSeen[ev.ID] = struct{}{}
-
 		if !ev.IsRepeat && (ev.From.Equal(ft) || ev.From.After(ft)) && ev.Till.Before(tt) {
 			fullEventsList = append(fullEventsList, ev)
 			continue
