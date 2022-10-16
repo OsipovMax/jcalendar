@@ -20,14 +20,14 @@ func NewRepository(db *gorm.DB) *Repository {
 	}
 }
 
-func (r *Repository) CreateInvite(ctx context.Context, i *einvite.Invite) (uint, error) {
+func (r *Repository) CreateInvite(ctx context.Context, i *einvite.Invite) error {
 	err := r.db.WithContext(ctx).Create(i).Error
 
 	if err != nil {
-		return 0, fmt.Errorf("invalid creating invite: %w", err)
+		return fmt.Errorf("invalid creating invite: %w", err)
 	}
 
-	return i.ID, nil
+	return nil
 }
 
 func (r *Repository) GetInviteByID(ctx context.Context, id uint) (*einvite.Invite, error) {

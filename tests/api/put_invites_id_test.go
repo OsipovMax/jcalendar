@@ -104,7 +104,7 @@ func TestPutInvitesId(t *testing.T) {
 
 			inv := einvite.NewInvite(ctx, inviteUserID, inviteEventID, false)
 
-			_, err = irepo.CreateInvite(ctx, inv)
+			err = irepo.CreateInvite(ctx, inv)
 			require.NoError(t, err)
 
 			var rawData []byte

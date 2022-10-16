@@ -37,7 +37,7 @@ func (s *Server) GetEventsId(c echo.Context, id string) error {
 	}
 
 	var details = e.Details
-	if !isResourceOwner(ctx, e.CreatorID, c.Get("userID").(uint)) {
+	if !isResourceOwner(ctx, e.CreatorID, c.Get(userIDClaim).(uint)) {
 		details = busyEventDetail
 	}
 
