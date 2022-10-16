@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	eschedule "jcalendar/internal/service/entity/schedule"
-
 	"github.com/stretchr/testify/require"
+
+	eschedule "jcalendar/internal/service/entity/schedule"
 )
 
 func TestHandleRule(t *testing.T) {
@@ -57,7 +57,7 @@ func TestHandleRule(t *testing.T) {
 		},
 		{
 			testSubTittle:     "invalid endOccurrence part value",
-			rule:              "SCHEDULER_MODE=CUSTOM;ENDING_MODE=DATA;END_OCCURRENCE=AAAA;INTERVAL=1;IS_REGULAR=TRUE;SHIFT=WEEKLY;CUSTOM_DAY_LIST=1,2,3;",
+			rule:              "SCHEDULER_MODE=CUSTOM;ENDING_MODE=DATA;END_OCCURRENCE=AAAA;INTERVAL=1;IS_REGULAR=TRUE",
 			expectedSchedules: nil,
 			expectedError:     ErrInvalidEndOccurrencePartVal,
 		},

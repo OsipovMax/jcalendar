@@ -14,7 +14,7 @@ func (e *RuleManager) HandleRule(
 	eventFrom time.Time,
 	eventScheduleRule string,
 ) ([]*eschedule.EventSchedule, error) {
-	parts := strings.Split(eventScheduleRule, ";")
+	parts := strings.Split(eventScheduleRule, partsSeparator)
 
 	if len(parts) < minTokenCount {
 		return nil, ErrInvalidRuleExpr
@@ -35,7 +35,7 @@ func (e *RuleManager) tokenize(
 	)
 
 	for idx := range parts {
-		part := strings.Split(parts[idx], "=")
+		part := strings.Split(parts[idx], tokenSeparator)
 
 		if len(part) < 2 {
 			return nil, ErrInvalidPartLen
@@ -76,10 +76,10 @@ func (e *RuleManager) tokenize(
 		}
 	}
 
-	if schedule.SchedulerType == customSchedulerMode && len(strDaysList) != 0 {
+	if schedule.SchedulerType == customSchedulerMode && schedule.Shift == weeklyShiftMode && len(strDaysList) != 0 {
 		curWeekday := schedule.BeginOccurrence.Weekday()
 		var scheduleList []*eschedule.EventSchedule
-		for _, strDay := range strings.Split(strDaysList, ",") {
+		for _, strDay := range strings.Split(strDaysList, listSeparator) {
 			day, err := strconv.Atoi(strDay)
 			if err != nil {
 				return nil, err

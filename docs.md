@@ -144,3 +144,18 @@ curl -X 'GET' \
 ```
 
 В результате будет возвращены отметки начала и конца ближайшего свободного окна.
+
+### Правило повторения встречи
+```
+SCHEDULER_MODE=COMMON;ENDING_MODE=NONE;INTERVAL=1;IS_REGULAR=TRUE;SHIFT=DAILY - правило повторения (стандартное)
+
+SCHEDULER_MODE=CUSTOM;ENDING_MODE=NONE;INTERVAL=1;IS_REGULAR=TRUE;SHIFT=WEEKLY;CUSTOM_DAY_LIST=1,2,3 - правило повторения (кастомное)
+
+Token-ы:
+SCHEDULER_MODE=COMMON|CUSTOM - режим планирования
+ENDING_MODE=NONE|DATA (NONE - повторение без ограничения по времени, DATA - повторение с ограничение. DATA требует ненулевого значения END_OCCURRENCE)
+INTERVAL=1 - интервал повторения в днях, неделях, месяцах, годах
+IS_REGULAR=TRUE|FALSE - планирование встреч на выходных. Доступно для SCHEDULER_MODE=COMMON.
+SHIFT=DAILY|WEEKLY|MONTHLY|YEARLY - сдвиг повтора встречи
+CUSTOM_DAY_LIST=1,2,3 - набор дней для проведения встречи доступен только при SCHEDULER_MODE=CUSTOM и SHIFT=WEEKLY
+```

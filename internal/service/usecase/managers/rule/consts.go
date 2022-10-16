@@ -2,6 +2,7 @@ package manager
 
 const (
 	customSchedulerMode = "CUSTOM"
+	weeklyShiftMode     = "WEEKLY"
 
 	schedulerModeKey = "SCHEDULER_MODE"
 	endingModeKey    = "ENDING_MODE"
@@ -14,4 +15,10 @@ const (
 
 const (
 	minTokenCount = 5
+)
+
+const (
+	partsSeparator = ";"
+	tokenSeparator = "="
+	listSeparator  = ","
 )
